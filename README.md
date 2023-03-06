@@ -15,6 +15,8 @@ Shoutout to Rently's engineering team who provide us with very interesting reads
 
 ## Installation
 
+> :globe_with_meridians: **Coming soon** - For now, clone the repo and install from local files using `pip` or `poetry`
+
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the library.
 
 ```bash
@@ -43,10 +45,12 @@ cloud.get_devices("HUB ID") # Set hub id here
 
 ## Implementation
 
-The library currently supports the following device:
+The library currently supports the following devices:
+
     - Hub
+    - Dimmer
+    - Leak Sensor
     - Lock
-    - Sensor
     - Switch
     - Thermostat
 
