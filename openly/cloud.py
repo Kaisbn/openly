@@ -6,7 +6,6 @@ import requests
 
 import openly.util as util
 from openly.api import APIRequestGenerator
-from openly.devices.base_device import BaseDevice
 from openly.const import (
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
@@ -17,6 +16,7 @@ from openly.const import (
     HEADER_VALUE_CONTENT_TYPE,
     HEADER_VALUE_USER_AGENT,
 )
+from openly.devices.base_device import BaseDevice
 from openly.devices.hub import Hub
 from openly.exceptions import (
     InvalidResponseError,

@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Run black
-        run: poetry run black . --check
+        run: poetry run black . --check --line-length 79
       - name: Run isort
         run: poetry run isort . --check-only --profile black
       - name: Run flake8
