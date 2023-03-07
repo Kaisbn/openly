@@ -2,7 +2,7 @@
 from openly.devices.hub import Hub
 from openly.devices.leak import LeakSensor
 from openly.devices.lock import Lock
-from openly.devices.switch import Dimmer
+from openly.devices.dimmer import Dimmer
 from openly.devices.thermostat import Thermostat
 
 # Supported devices
@@ -21,5 +21,6 @@ HEADER_KEY_CONTENT_TYPE = "Content-Type"
 HEADER_VALUE_USER_AGENT = "keyless/1102 CFNetwork/1220.1 Darwin/20.3.0"
 HEADER_VALUE_CONTENT_TYPE = "application/json"
 
+API_DEFAULT_BASE_URL = "https://app2.keyless.rocks/api/"
 API_RETRY_ATTEMPTS = 3
 API_RETRY_TIME = 10 # seconds

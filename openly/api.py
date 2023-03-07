@@ -1,4 +1,5 @@
 from typing import Any, Optional, Union
+import openly.const as const
 import json
 
 
@@ -6,6 +7,9 @@ class APIRouteGenerator:
     """
     URL path generator class
     """
+    _BASE_URL : str = None
+    _BASE_LOGIN_URL : str = None
+
     def __init__(self, url : Optional[str] = None, login_url : Optional[str] = None) -> None:
         """
         Constructor
@@ -15,7 +19,7 @@ class APIRouteGenerator:
             login_url (str): Base URL to reach Rently's login API, useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
-        self._BASE_URL = url or "https://app2.keyless.rocks/api/"
+        self._BASE_URL = url or const.API_DEFAULT_BASE_URL
         self._BASE_LOGIN_URL = login_url or self._BASE_URL
 
     def __getattr__(self, attr : str) -> str:
@@ -47,7 +51,7 @@ class APIRequest:
             login_url (str): Base URL to reach Rently's login API, useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
-        self.api_routes = APIRouteGenerator(url, url, login_url)
+        self.api_routes = APIRouteGenerator(url, login_url)
 
     def _get_oauth_token_request(self, email : str, password : str) -> dict[str, Any]:
         """
