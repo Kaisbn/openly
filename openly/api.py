@@ -38,10 +38,12 @@ class APIRouteGenerator:
         return self._BASE_URL + attr.lower().replace("_", "/")
 
 
-class APIRequest:
+class APIRequestGenerator:
     """
     API Request generator class
     """
+    api_routes : APIRouteGenerator = None
+
     def __init__(self, url : Optional[str] = None, login_url : Optional[str] = None) -> None:
         """
         Constructor

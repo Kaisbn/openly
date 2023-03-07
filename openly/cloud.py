@@ -1,4 +1,4 @@
-from openly.api import APIRequest
+from openly.api import APIRequestGenerator
 from openly.devices.base_device import BaseDevice
 from openly.exceptions import (
     InvalidResponseError,
@@ -18,7 +18,7 @@ _LOGGER = util.setupLogger()
 
 
 class RentlyCloud:
-    api : APIRequest = None
+    api : APIRequestGenerator = None
     auth: dict = None
     connected: bool = False
     session: requests.Session = None
@@ -33,7 +33,7 @@ class RentlyCloud:
                 Defaults to the Base URL above.
         """
         self.session = requests.Session()
-        self.api = APIRequest(url, login_url)
+        self.api = APIRequestGenerator(url, login_url)
 
     @property
     def headers(self) -> dict:
