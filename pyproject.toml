@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "openly-core"
+name = "openly"
 version = "0.1.0"
 description = "Python API wrapper for Rently Smart Home hubs and devices"
 authors = ["Kais Bennaceur <bennaceur.kais@me.com>"]
@@ -17,6 +17,9 @@ flake8 = "^6.0.0"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 black = "^22.12.0"
+isort = "^5.12.0"
+bandit = "^1.7.4"
+safety = "^2.3.5"
 
 [build-system]
 requires = ["poetry-core"]
