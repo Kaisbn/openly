@@ -1,35 +1,50 @@
+import json
+from time import sleep
+from typing import Any, Optional, Union
+
+import requests
+
+import openly.util as util
 from openly.api import APIRequestGenerator
 from openly.devices.base_device import BaseDevice
+from openly.const import (
+    API_RETRY_ATTEMPTS,
+    API_RETRY_TIME,
+    DEVICES,
+    HEADER_KEY_AUTHORIZATION,
+    HEADER_KEY_CONTENT_TYPE,
+    HEADER_KEY_USER_AGENT,
+    HEADER_VALUE_CONTENT_TYPE,
+    HEADER_VALUE_USER_AGENT,
+)
+from openly.devices.hub import Hub
 from openly.exceptions import (
     InvalidResponseError,
     MissingParametersError,
     RentlyAPIError,
     RentlyAuthError,
 )
-from openly.devices.hub import Hub
-from time import sleep
-from typing import Any, Optional, Union
-import json
-import requests
-import openly.const as constants
-import openly.util as util
 
 _LOGGER = util.setupLogger()
 
 
 class RentlyCloud:
-    api : APIRequestGenerator = None
+    api: APIRequestGenerator = None
     auth: dict = None
     connected: bool = False
     session: requests.Session = None
 
-    def __init__(self, url : Optional[str] = None, login_url : Optional[str] = None) -> None:
+    def __init__(
+        self, url: Optional[str] = None, login_url: Optional[str] = None
+    ) -> None:
         """
         Constructor
 
         Args:
-            url (str): Base URL to reach Rently's API. Defaults to the URL provided in the documentation
-            login_url (str): Base URL to reach Rently's login API, useful when login is separated from the main API.
+            url (str): Base URL to reach Rently's API.
+                Defaults to the URL provided in the documentation
+            login_url (str): Base URL to reach Rently's login API,
+                useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
         self.session = requests.Session()
@@ -38,12 +53,12 @@ class RentlyCloud:
     @property
     def headers(self) -> dict:
         headers = {
-            constants.HEADER_KEY_USER_AGENT: constants.HEADER_VALUE_USER_AGENT,
-            constants.HEADER_KEY_CONTENT_TYPE: constants.HEADER_VALUE_CONTENT_TYPE
+            HEADER_KEY_USER_AGENT: HEADER_VALUE_USER_AGENT,
+            HEADER_KEY_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
         }
 
         if self.token:
-            headers[constants.HEADER_KEY_AUTHORIZATION] = self.token
+            headers[HEADER_KEY_AUTHORIZATION] = self.token
 
         return headers
 
@@ -53,9 +68,10 @@ class RentlyCloud:
             return None
         return self.auth["access_token"]
 
-    def call(self, req : dict[str, Any]) -> dict[str, Any]:
+    def call(self, req: dict[str, Any]) -> dict[str, Any]:
         """
-        Method to make an HTTP request to the API using the provided request parameters
+        Method to make an HTTP request to the API using the provided request
+        parameters
 
         Args:
             req (dict[str, Any]): Request parameters
@@ -67,7 +83,7 @@ class RentlyCloud:
             dict[str, Any]: JSON Response from the server
         """
         attempts = 0
-        while attempts < constants.API_RETRY_ATTEMPTS:
+        while attempts < API_RETRY_ATTEMPTS:
             attempts += 1
 
             try:
@@ -79,23 +95,33 @@ class RentlyCloud:
                 )
 
                 _LOGGER.debug(
-                    "Received API response: %s, %s", res.status_code, res.content
+                    "Received API response: %s, %s",
+                    res.status_code,
+                    res.content,
                 )
 
                 res.raise_for_status()
             except requests.exceptions.HTTPError as err:
                 if err.response.status_code == 429:
                     _LOGGER.debug(
-                        "Rently sent a 429 Too Many Requests (attempt: %d/%d), sleeping for %d seconds and trying again",
+                        (
+                            "Rently sent a 429 Too Many Requests (attempt:"
+                            " %d/%d), sleeping for %d seconds and trying"
+                            " again"
+                        ),
                         attempts,
-                        constants.API_RETRY_ATTEMPTS,
-                        constants.API_RETRY_TIME
+                        API_RETRY_ATTEMPTS,
+                        API_RETRY_TIME,
                     )
 
-                    sleep(constants.API_RETRY_TIME)
+                    sleep(API_RETRY_TIME)
                     continue
                 else:
-                    _LOGGER.error("Request to %s failed: %s", req['url'], err.response.content)
+                    _LOGGER.error(
+                        "Request to %s failed: %s",
+                        req["url"],
+                        err.response.content,
+                    )
                     raise RentlyAPIError(err.response.content) from err
 
         return res.json()
@@ -152,7 +178,7 @@ class RentlyCloud:
 
         return [Hub(device_id=h["id"]) for h in hubs_data["hubs"]]
 
-    def get_hub(self, hub_id : Union[str, int]) -> Hub:
+    def get_hub(self, hub_id: Union[str, int]) -> Hub:
         """
         Retrieve single hub
 
@@ -171,11 +197,11 @@ class RentlyCloud:
         _LOGGER.debug("Retrieving hub with ID %s", hub_id)
 
         return Hub(
-            device_id=hub_id, device_data=self.call(self.api._get_hub_detail_request(hub_id))
+            device_id=hub_id,
+            device_data=self.call(self.api._get_hub_detail_request(hub_id)),
         )
 
-
-    def get_devices(self, hub_id : Union[str, int]) -> list[BaseDevice]:
+    def get_devices(self, hub_id: Union[str, int]) -> list[BaseDevice]:
         """
         Retrieve list of devices
 
@@ -186,7 +212,7 @@ class RentlyCloud:
             RentlyAuthError: Unauthenticated
 
         Returns:
-            list[BaseDevice]: List of device objects (that inherit BaseDevice)
+            list[BaseDevice]: List of device objects (inherit BaseDevice)
         """
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
@@ -199,17 +225,18 @@ class RentlyCloud:
         device_objs = []
 
         for device_type, device_list in devices_data.items():
-            if device_type in constants.DEVICES:
+            if device_type in DEVICES:
                 for device_data in device_list:
                     device_objs.append(
-                        constants.DEVICES[device_type](
-                            device_id=device_data["id"], device_data=device_data
+                        DEVICES[device_type](
+                            device_id=device_data["id"],
+                            device_data=device_data,
                         )
                     )
 
         return device_objs
 
-    def get_device(self, device_id : Union[str, int]) -> BaseDevice:
+    def get_device(self, device_id: Union[str, int]) -> BaseDevice:
         """
         Retrieve single device
 
@@ -227,14 +254,16 @@ class RentlyCloud:
 
         device_data = self.call(self.api._get_device_detail_request(device_id))
         device_type = device_data.get("device_type")
-        if not device_data or not device_type or device_type not in constants.DEVICES:
+        if not device_data or not device_type or device_type not in DEVICES:
             raise InvalidResponseError(f"Invalid device: {device_data}")
 
         _LOGGER.debug("Retrieving device with ID %s", device_id)
 
-        return constants.DEVICES[device_type](device_id=device_id, device_data=device_data)
+        return DEVICES[device_type](
+            device_id=device_id, device_data=device_data
+        )
 
-    def send_command(self, device_id : Union[str, int], command : str):
+    def send_command(self, device_id: Union[str, int], command: str):
         """
         Send a command to a device
 
@@ -248,7 +277,9 @@ class RentlyCloud:
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
 
-        _LOGGER.debug("Sending payload %s to %s", json.dumps(command), device_id)
+        _LOGGER.debug(
+            "Sending payload %s to %s", json.dumps(command), device_id
+        )
 
         self.call(self.api._update_device_request(device_id, command))
 
@@ -266,6 +297,10 @@ class RentlyCloud:
         if not device or not isinstance(device, BaseDevice):
             raise MissingParametersError("Device not found")
 
-        _LOGGER.debug("Sending payload %s to %s", json.dumps(device.cmd), device.device_id)
+        _LOGGER.debug(
+            "Sending payload %s to %s",
+            json.dumps(device.cmd),
+            device.device_id,
+        )
 
         self.send_command(device.device_id, device.cmd)

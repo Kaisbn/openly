@@ -4,7 +4,9 @@ from openly.devices.switch import Switch
 class Dimmer(Switch):
     power: int = None
 
-    def __init__(self, device_id: str = None, device_data: dict = None) -> None:
+    def __init__(
+        self, device_id: str = None, device_data: dict = None
+    ) -> None:
         super().__init__(device_id, device_data)
 
         if "status" in self._data:

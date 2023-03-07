@@ -1,5 +1,6 @@
 from urllib.error import HTTPError
 
+
 class InvalidResponseError(Exception):
     pass
 

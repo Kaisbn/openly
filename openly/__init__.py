@@ -1,9 +1,6 @@
 """The Rently API Wrapper"""
 
-from openly.cloud import RentlyCloud
 from openly import devices
+from openly.cloud import RentlyCloud
 
-__all__ = [
-    'devices',
-    'RentlyCloud'
-]
+__all__ = ["devices", "RentlyCloud"]

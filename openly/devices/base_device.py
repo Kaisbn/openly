@@ -5,9 +5,12 @@ class BaseDevice(ABC):
     """
     Base abstract class for Rently supported devices
     """
+
     _id: str = None
 
-    def __init__(self, device_id: str = None, device_data: dict = None) -> None:
+    def __init__(
+        self, device_id: str = None, device_data: dict = None
+    ) -> None:
         self._id = device_id
         self._data = device_data
 

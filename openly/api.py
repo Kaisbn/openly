@@ -1,28 +1,34 @@
-from typing import Any, Optional, Union
-import openly.const as const
 import json
+from typing import Any, Optional, Union
+
+import openly.const as const
 
 
 class APIRouteGenerator:
     """
     URL path generator class
     """
-    _BASE_URL : str = None
-    _BASE_LOGIN_URL : str = None
 
-    def __init__(self, url : Optional[str] = None, login_url : Optional[str] = None) -> None:
+    _BASE_URL: str = None
+    _BASE_LOGIN_URL: str = None
+
+    def __init__(
+        self, url: Optional[str] = None, login_url: Optional[str] = None
+    ) -> None:
         """
         Constructor
 
         Args:
-            url (str): Base URL to reach Rently's API. Defaults to the URL provided in the documentation
-            login_url (str): Base URL to reach Rently's login API, useful when login is separated from the main API.
+            url (str): Base URL to reach Rently's API.
+                Defaults to the URL provided in the documentation
+            login_url (str): Base URL to reach Rently's login API,
+                useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
         self._BASE_URL = url or const.API_DEFAULT_BASE_URL
         self._BASE_LOGIN_URL = login_url or self._BASE_URL
 
-    def __getattr__(self, attr : str) -> str:
+    def __getattr__(self, attr: str) -> str:
         """
         Override __getattr__ magic method to return generated URL paths
 
@@ -32,7 +38,7 @@ class APIRouteGenerator:
         Returns:
             str: URL Path
         """
-        if attr.lower() == 'login':
+        if attr.lower() == "login":
             return self._BASE_LOGIN_URL + "oauth/token"
 
         return self._BASE_URL + attr.lower().replace("_", "/")
@@ -42,20 +48,27 @@ class APIRequestGenerator:
     """
     API Request generator class
     """
-    api_routes : APIRouteGenerator = None
 
-    def __init__(self, url : Optional[str] = None, login_url : Optional[str] = None) -> None:
+    api_routes: APIRouteGenerator = None
+
+    def __init__(
+        self, url: Optional[str] = None, login_url: Optional[str] = None
+    ) -> None:
         """
         Constructor
 
         Args:
-            url (str): Base URL to reach Rently's API. Defaults to the URL provided in the documentation
-            login_url (str): Base URL to reach Rently's login API, useful when login is separated from the main API.
+            url (str): Base URL to reach Rently's API.
+                Defaults to the URL provided in the documentation
+            login_url (str): Base URL to reach Rently's login API,
+                useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
         self.api_routes = APIRouteGenerator(url, login_url)
 
-    def _get_oauth_token_request(self, email : str, password : str) -> dict[str, Any]:
+    def _get_oauth_token_request(
+        self, email: str, password: str
+    ) -> dict[str, Any]:
         """
         Retrieve authentication token using credentials
 
@@ -84,7 +97,9 @@ class APIRequestGenerator:
             "url": self.api_routes.hubs,
         }
 
-    def _get_hub_detail_request(self, hub_id : Union[str, int]) -> dict[str, Any]:
+    def _get_hub_detail_request(
+        self, hub_id: Union[str, int]
+    ) -> dict[str, Any]:
         """
         Retrieve single hub information
 
@@ -99,7 +114,9 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}"),
         }
 
-    def _get_device_list_request(self, hub_id : Union[str, int]) -> dict[str, Any]:
+    def _get_device_list_request(
+        self, hub_id: Union[str, int]
+    ) -> dict[str, Any]:
         """
         Retrieve list of devices for a single hub
 
@@ -114,7 +131,9 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}_devices"),
         }
 
-    def _get_device_detail_request(self, device_id : Union[str, int]) -> dict[str, Any]:
+    def _get_device_detail_request(
+        self, device_id: Union[str, int]
+    ) -> dict[str, Any]:
         """
         Retrieve list of devices for a single hub
 
@@ -129,7 +148,9 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"devices_{device_id}"),
         }
 
-    def _update_device_request(self, device_id: Union[str, int], commands : Any) -> dict[str, Any]:
+    def _update_device_request(
+        self, device_id: Union[str, int], commands: Any
+    ) -> dict[str, Any]:
         """
         Push one or multiple commands to a specific device
 
