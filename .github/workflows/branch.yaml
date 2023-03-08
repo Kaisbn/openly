@@ -71,5 +71,5 @@ jobs:
         run: poetry install
       - name: Run bandit
         run: poetry run bandit .
-      - name: Run saftey
+      - name: Run safety
         run: poetry run safety check

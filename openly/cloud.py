@@ -101,6 +101,7 @@ class RentlyCloud:
                 )
 
                 res.raise_for_status()
+                break
             except requests.exceptions.HTTPError as err:
                 if err.response.status_code == 429:
                     _LOGGER.debug(
@@ -122,7 +123,20 @@ class RentlyCloud:
                         req["url"],
                         err.response.content,
                     )
-                    raise RentlyAPIError(err.response.content) from err
+                    raise RentlyAPIError(
+                        url=req["url"],
+                        code=err.response.status_code,
+                        hdrs=err.response.headers,
+                        msg=err.response.content,
+                    ) from err
+
+        if attempts == API_RETRY_ATTEMPTS:
+            raise RentlyAPIError(
+                url=req["url"],
+                code=429,
+                hdrs=None,
+                msg="Too many requests",
+            )
 
         return res.json()
 
