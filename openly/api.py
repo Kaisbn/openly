@@ -28,8 +28,7 @@ class APIRouteGenerator:
         if url:
             self._BASE_URL = url
 
-        if login_url:
-            self._BASE_LOGIN_URL = login_url
+        self._BASE_LOGIN_URL = login_url or self._BASE_URL
 
     def __getattr__(self, attr: str) -> str:
         """

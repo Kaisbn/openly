@@ -10,7 +10,7 @@ def test_default_api_request_generator():
     assert generator.api_routes._BASE_LOGIN_URL == API_DEFAULT_BASE_URL
 
 
-def test_custom_api_generator_generator():
+def test_custom_api_request_generator():
     base_url = "http://localhost:8080/"
     generator = APIRequestGenerator(base_url)
 

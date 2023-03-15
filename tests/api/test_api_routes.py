@@ -6,7 +6,6 @@ def test_default_api_path_generator():
     generator = APIRouteGenerator()
 
     assert generator._BASE_URL == API_DEFAULT_BASE_URL
-
     assert generator._BASE_LOGIN_URL == API_DEFAULT_BASE_URL
 
 
@@ -15,7 +14,6 @@ def test_custom_api_path_generator():
     generator = APIRouteGenerator(base_url)
 
     assert generator._BASE_URL == base_url
-
     assert generator._BASE_LOGIN_URL == base_url
 
 
