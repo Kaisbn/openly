@@ -25,21 +25,21 @@ def test_oauth_request():
         email="test@test.com", password="test"
     )
 
-    assert request['method'] == "POST"
-    assert request['url'] == API_DEFAULT_BASE_URL + "oauth/token"
+    assert request["method"] == "POST"
+    assert request["url"] == API_DEFAULT_BASE_URL + "oauth/token"
 
 
 def test_hub_list_request():
     generator = APIRequestGenerator()
     request = generator._get_hub_list_request()
 
-    assert request['method'] == "GET"
-    assert request['url'] == API_DEFAULT_BASE_URL + "hubs"
+    assert request["method"] == "GET"
+    assert request["url"] == API_DEFAULT_BASE_URL + "hubs"
 
 
 def test_hub_detail_request():
     generator = APIRequestGenerator()
     request = generator._get_hub_detail_request(hub_id=1)
 
-    assert request['method'] == "GET"
-    assert request['url'] == API_DEFAULT_BASE_URL + "hubs/1"
+    assert request["method"] == "GET"
+    assert request["url"] == API_DEFAULT_BASE_URL + "hubs/1"

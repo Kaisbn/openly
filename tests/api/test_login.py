@@ -27,7 +27,7 @@ def test_headers(cloud):
     assert cloud.headers[HEADER_KEY_CONTENT_TYPE] == HEADER_VALUE_CONTENT_TYPE
 
 
-@mock.patch('openly.cloud.requests.Session.request')
+@mock.patch("openly.cloud.requests.Session.request")
 def test_login_success(mock_request, cloud):
     response = {
         "success": True,
@@ -51,12 +51,9 @@ def test_login_success(mock_request, cloud):
     assert cloud.headers[HEADER_KEY_AUTHORIZATION] == cloud.token
 
 
-@mock.patch('openly.cloud.requests.Session.request', autospec=True)
+@mock.patch("openly.cloud.requests.Session.request", autospec=True)
 def test_login_bad_credentials(mock_request, cloud):
-    response = {
-        "success": False,
-        "message": "Incorrect username or password."
-    }
+    response = {"success": False, "message": "Incorrect username or password."}
     mock_request.return_value.status_code = 200
     mock_request.return_value.content = json.dumps(response)
     mock_request.return_value.json.return_value = response
@@ -84,7 +81,7 @@ def test_login_bad_credentials(mock_request, cloud):
 #     assert err.value.status_code == 429
 
 
-@mock.patch('openly.cloud.requests.Session.request', autospec=True)
+@mock.patch("openly.cloud.requests.Session.request", autospec=True)
 def test_login_server_error(mock_request, cloud):
     mock_response = requests.models.Response()
     mock_response.status_code = 500
