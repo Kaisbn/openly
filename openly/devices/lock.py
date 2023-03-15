@@ -5,21 +5,25 @@ from openly.exceptions import InvalidParametersError
 class Lock(BaseDevice):
     modes = ["lock", "unlock"]
 
-    mode: str = None
+    mode: str = "lock"  # Default mode
 
-    def __init__(
-        self, device_id: str = None, device_data: dict = None
-    ) -> None:
-        super().__init__(device_id, device_data)
+    def __init__(self, id: str | int, device_data: dict = {}) -> None:
+        super().__init__(id, device_data)
 
-        if "status" in self._data:
-            cur_mode = self._data["status"]["mode"]["type"]
+        if (
+            self.status
+            and "mode" in self.status
+            and "type" in self.status["mode"]
+        ):
+            cur_mode = self.status["mode"]["type"]
             if cur_mode == "locked":
                 self.mode = "lock"
             elif cur_mode == "unlocked":
                 self.mode = "unlock"
             else:
                 raise InvalidParametersError("Invalid mode")
+        else:
+            raise InvalidParametersError("Invalid status")
 
     def lock(self) -> None:
         self.mode = "lock"
@@ -28,13 +32,13 @@ class Lock(BaseDevice):
         self.mode = "unlock"
 
     @property
-    def cmd(self) -> dict[str, any]:
+    def cmd(self) -> dict:
         return {"mode": self.mode}
 
     @property
-    def status(self) -> str:
-        return self._data["status"]["mode"]["type"]
+    def type(self) -> str:
+        return self.status["mode"]["type"]
 
     @property
     def battery(self) -> int:
-        return self._data["status"]["mode"]["battery"]
+        return self.status["mode"]["battery"]

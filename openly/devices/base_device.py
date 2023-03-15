@@ -1,4 +1,4 @@
-from abc import ABC, abstractproperty
+from abc import ABC
 
 
 class BaseDevice(ABC):
@@ -6,25 +6,33 @@ class BaseDevice(ABC):
     Base abstract class for Rently supported devices
     """
 
-    _id: str = None
+    _id: str | int
+    device_name: str
+    status: dict
 
-    def __init__(
-        self, device_id: str = None, device_data: dict = None
-    ) -> None:
-        self._id = device_id
-        self._data = device_data
+    def __init__(self, id: str | int, device_data: dict = {}) -> None:
+        self._id = id
+        self.__dict__.update(device_data)
 
     def __str__(self) -> str:
         return f"{type(self).__name__} - {self._id}"
 
     @property
-    def device_id(self) -> str:
-        return self._id or self._data["id"]
+    def id(self) -> str | int:
+        return self._id
+
+    @id.setter
+    def id(self, value: str | int) -> None:
+        self._id = value
+
+    @id.deleter
+    def id(self) -> None:
+        del self._id
 
     @property
     def name(self) -> str:
-        return self._data["device_name"]
+        return self.device_name
 
-    @abstractproperty
-    def cmd(self) -> dict[str, any]:
+    @property
+    def cmd(self) -> dict:
         return {}

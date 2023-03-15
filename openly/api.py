@@ -9,8 +9,8 @@ class APIRouteGenerator:
     URL path generator class
     """
 
-    _BASE_URL: str = None
-    _BASE_LOGIN_URL: str = None
+    _BASE_URL: str = const.API_DEFAULT_BASE_URL
+    _BASE_LOGIN_URL: str = const.API_DEFAULT_BASE_URL
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None
@@ -25,8 +25,11 @@ class APIRouteGenerator:
                 useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
-        self._BASE_URL = url or const.API_DEFAULT_BASE_URL
-        self._BASE_LOGIN_URL = login_url or self._BASE_URL
+        if url:
+            self._BASE_URL = url
+
+        if login_url:
+            self._BASE_LOGIN_URL = login_url
 
     def __getattr__(self, attr: str) -> str:
         """
@@ -49,7 +52,7 @@ class APIRequestGenerator:
     API Request generator class
     """
 
-    api_routes: APIRouteGenerator = None
+    api_routes: APIRouteGenerator
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None

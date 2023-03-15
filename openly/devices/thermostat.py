@@ -5,24 +5,32 @@ from openly.exceptions import InvalidParametersError, MissingParametersError
 class Thermostat(BaseDevice):
     modes = ["auto", "cool", "heat", "off"]
 
-    mode: str = None
-    heat_celsius: int = None
-    cool_celsius: int = None
-    temp_celsius: int = None
+    mode: str = "off"  # Default mode
+    heat_celsius: int = 0  # Default heat
+    cool_celsius: int = 0  # Default cool
+    temp_celsius: int = 0  # Default temp
 
-    def __init__(
-        self, device_id: str = None, device_data: dict = None
-    ) -> None:
-        super().__init__(device_id, device_data)
+    def __init__(self, id: str | int, device_data: dict = {}) -> None:
+        super().__init__(id, device_data)
 
-        if "status" in self._data:
-            self.mode = self._data["status"]["mode"]
-            if self.mode not in self.modes:
+        if self.status and "mode" in self.status:
+            if self.status["mode"] not in self.modes:
                 raise InvalidParametersError("Invalid mode")
+            self.mode = self.status["mode"]
 
-            self.heat_celsius = self._data["status"]["heating_setpoint"]
-            self.cool_celsius = self._data["status"]["cooling_setpoint"]
-            self.temp_celsius = self._data["status"]["room_temp"]
+            if "heating_setpoint" not in self.status:
+                raise InvalidParametersError("Invalid heating temperature")
+            self.heat_celsius = self.status["heating_setpoint"]
+
+            if "cooling_setpoint" not in self.status:
+                raise InvalidParametersError("Invalid cooling temperature")
+            self.cool_celsius = self.status["cooling_setpoint"]
+
+            if "room_temp" not in self.status:
+                raise InvalidParametersError("Invalid room temperature")
+            self.temp_celsius = self.status["room_temp"]
+        else:
+            raise InvalidParametersError("Invalid status")
 
     def off(self):
         self.mode = "off"
@@ -43,7 +51,7 @@ class Thermostat(BaseDevice):
         self.heat_celsius = temp
 
     @property
-    def cmd(self):
+    def cmd(self) -> dict:
         cmd = {
             "mode": self.mode,
             "heating_setpoint": self.heat_celsius,

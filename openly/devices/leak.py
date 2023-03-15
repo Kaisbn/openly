@@ -5,18 +5,12 @@ from openly.exceptions import InvalidParametersError
 class LeakSensor(BaseDevice):
     modes = ["yes", "no"]
 
-    mode: str = None
+    def __init__(self, id: str | int, device_data: dict = {}) -> None:
+        super().__init__(id, device_data)
 
-    def __init__(
-        self, device_id: str = None, device_data: dict = None
-    ) -> None:
-        super().__init__(device_id, device_data)
-
-        if "status" in self._data:
-            self.mode = self._data["status"]["leakage"]
-            if self.mode not in self.modes:
+        if self.status and "leakage" in self.status:
+            if self.status["leakage"] not in self.modes:
                 raise InvalidParametersError("Invalid mode")
-
-    @property
-    def cmd(self):
-        return {}
+            self.mode = self.status["leakage"]
+        else:
+            raise InvalidParametersError("Invalid status")

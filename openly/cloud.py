@@ -16,8 +16,8 @@ from openly.const import (
     HEADER_VALUE_CONTENT_TYPE,
     HEADER_VALUE_USER_AGENT,
 )
+from openly.devices import Hub
 from openly.devices.base_device import BaseDevice
-from openly.devices.hub import Hub
 from openly.exceptions import (
     InvalidResponseError,
     MissingParametersError,
@@ -29,10 +29,10 @@ _LOGGER = util.setupLogger()
 
 
 class RentlyCloud:
-    api: APIRequestGenerator = None
-    auth: dict = None
+    api: APIRequestGenerator
+    auth: dict = {}
     connected: bool = False
-    session: requests.Session = None
+    session: requests.Session
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None
@@ -190,7 +190,7 @@ class RentlyCloud:
 
         _LOGGER.debug("Retrieving list of hubs")
 
-        return [Hub(device_id=h["id"]) for h in hubs_data["hubs"]]
+        return [Hub(id=h["id"]) for h in hubs_data["hubs"]]
 
     def get_hub(self, hub_id: Union[str, int]) -> Hub:
         """
@@ -211,7 +211,7 @@ class RentlyCloud:
         _LOGGER.debug("Retrieving hub with ID %s", hub_id)
 
         return Hub(
-            device_id=hub_id,
+            id=hub_id,
             device_data=self.call(self.api._get_hub_detail_request(hub_id)),
         )
 
@@ -243,7 +243,7 @@ class RentlyCloud:
                 for device_data in device_list:
                     device_objs.append(
                         DEVICES[device_type](
-                            device_id=device_data["id"],
+                            id=device_data["id"],
                             device_data=device_data,
                         )
                     )
@@ -273,17 +273,15 @@ class RentlyCloud:
 
         _LOGGER.debug("Retrieving device with ID %s", device_id)
 
-        return DEVICES[device_type](
-            device_id=device_id, device_data=device_data
-        )
+        return DEVICES[device_type](id=device_id, device_data=device_data)
 
-    def send_command(self, device_id: Union[str, int], command: str):
+    def send_command(self, device_id: Union[str, int], command: Any) -> None:
         """
         Send a command to a device
 
         Args:
             device_id (Union[str, int]): ID of the device to command
-            command (str): Action to execute
+            command (Any): Action to execute
 
         Raises:
             RentlyAuthError: Unauthenticated
@@ -297,7 +295,7 @@ class RentlyCloud:
 
         self.call(self.api._update_device_request(device_id, command))
 
-    def update_device_status(self, device):
+    def update_device_status(self, device) -> None:
         """
         Send the current command to the specified device
 
@@ -314,7 +312,7 @@ class RentlyCloud:
         _LOGGER.debug(
             "Sending payload %s to %s",
             json.dumps(device.cmd),
-            device.device_id,
+            device.id,
         )
 
-        self.send_command(device.device_id, device.cmd)
+        self.send_command(device.id, device.cmd)

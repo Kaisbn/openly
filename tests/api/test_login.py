@@ -61,10 +61,9 @@ def test_login_bad_credentials(mock_request, cloud):
     with pytest.raises(RentlyAuthError):
         cloud.login("mock_email", "mock_password")
 
-    assert cloud.connected is False
-
-    assert cloud.auth is None
-    assert cloud.token is None
+    assert not cloud.connected
+    assert not cloud.auth
+    assert not cloud.token
 
     assert HEADER_KEY_AUTHORIZATION not in cloud.headers
 
@@ -87,12 +86,11 @@ def test_login_server_error(mock_request, cloud):
     mock_response.status_code = 500
     mock_request.return_value = mock_response
 
-    with pytest.raises(RentlyAPIError) as err:
+    with pytest.raises(RentlyAPIError):
         cloud.login("mock_email", "mock_password")
 
-    assert cloud.connected is False
-
-    assert cloud.auth is None
-    assert cloud.token is None
+    assert not cloud.connected
+    assert not cloud.auth
+    assert not cloud.token
 
     assert HEADER_KEY_AUTHORIZATION not in cloud.headers

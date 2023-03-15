@@ -1,19 +1,26 @@
 from openly.devices.switch import Switch
+from openly.exceptions import InvalidParametersError
 
 
 class Dimmer(Switch):
-    power: int = None
+    power: int = 0  # Default power
 
-    def __init__(
-        self, device_id: str = None, device_data: dict = None
-    ) -> None:
-        super().__init__(device_id, device_data)
+    def __init__(self, id: str | int, device_data: dict = {}) -> None:
+        super().__init__(id, device_data)
 
-        if "status" in self._data:
-            self.power = self._data["status"]["power"]
+        if self.status and "power" in self.status:
+            if not self.status["power"].isdigit():
+                raise InvalidParametersError("Invalid power")
+            self.power = self.status["power"]
+        else:
+            raise InvalidParametersError("Invalid status")
+
+    def on(self):
+        super().on()
+        self.power = 100
 
     def off(self):
-        self.mode = "off"
+        super().off()
         self.power = 0
 
     def up(self, step=10):
