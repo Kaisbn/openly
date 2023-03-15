@@ -11,8 +11,8 @@ class BaseDevice(ABC):
     status: dict
 
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
-        self._id = id
         self.__dict__.update(device_data)
+        self._id = id
 
     def __str__(self) -> str:
         return f"{type(self).__name__} - {self._id}"

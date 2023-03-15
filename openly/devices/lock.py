@@ -8,10 +8,10 @@ class Lock(BaseDevice):
     mode: str = "lock"  # Default mode
 
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
-        super().__init__(id, device_data)
+        super().__init__(id=id, device_data=device_data)
 
         if (
-            self.status
+            hasattr(self, "status")
             and "mode" in self.status
             and "type" in self.status["mode"]
         ):
