@@ -1,20 +1,44 @@
-# Minimal makefile for Sphinx documentation
-#
+# Python testing
+CMD					= poetry run
+PYMODULE		= openly
+TESTS				= tests
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = source
-BUILDDIR      = build
+all: type test lint isort-check black-check bandit safety
 
-# Put it first so that "make" without argument is like "make help".
-help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+lint:
+	$(CMD) flake8 $(PYMODULE) $(TESTS)
 
-.PHONY: help Makefile
+type:
+	$(CMD) mypy $(PYMODULE) $(TESTS)
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+test:
+	$(CMD) pytest --cov=$(PYMODULE) $(TESTS)
+
+test-cov:
+	$(CMD) pytest --cov=$(PYMODULE) $(TESTS) --cov-report html
+
+test-cov-xml:
+	$(CMD) pytest --cov=$(PYMODULE) $(TESTS) --cov-report xml
+
+isort:
+	$(CMD) isort --profile black $(PYMODULE) $(TESTS)
+
+isort-check:
+	$(CMD) isort --check-only --profile black $(PYMODULE) $(TESTS)
+
+black:
+	$(CMD) black --line-length 79 $(PYMODULE) $(TESTS)
+
+black-check:
+	$(CMD) black --check --line-length 79 $(PYMODULE) $(TESTS)
+
+bandit:
+	$(CMD) bandit --recursive $(PYMODULE)
+
+safety:
+	$(CMD) safety --disable-optional-telemetry-data check
+
+clean:
+	git clean -Xdf # Delete all files in .gitignore
+
+.PHONY: all clean lint type test test-cov black black-check isort isort-check bandit safety
