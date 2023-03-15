@@ -1,5 +1,8 @@
 # Openly
 
+![main](https://github.com/kaisbn/openly/actions/workflows/branch.yaml/badge.svg?branch=main)
+![release](https://github.com/kaisbn/openly/actions/workflows/release.yaml/badge.svg)
+
 Openly is a Python API wrapper for simple access to the Rently Smart Home API.
 
 **DISCLAIMER**: Rently is a registered trademark of Consumer 2.0 Inc., which I'm not affiliated to.
@@ -47,12 +50,12 @@ cloud.get_devices("HUB ID") # Set hub id here
 
 The library currently supports the following devices:
 
-    - Hub
-    - Dimmer
-    - Leak Sensor
-    - Lock
-    - Switch
-    - Thermostat
+- Hub
+- Dimmer
+- Leak Sensor
+- Lock
+- Switch
+- Thermostat
 
 Each device is represented by a class that implements the actions supported by the API. Example:
 
