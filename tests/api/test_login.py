@@ -1,6 +1,6 @@
+import json
 import unittest.mock as mock
 
-import json
 import pytest
 import requests
 
