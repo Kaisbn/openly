@@ -1,44 +1,38 @@
-from openly.devices.base_device import BaseDevice
+from openly.devices.switch import Switch
 from openly.exceptions import InvalidParametersError
 
 
-class Lock(BaseDevice):
-    modes = ["lock", "unlock"]
-
-    mode: str = "lock"  # Default mode
-
-    def __init__(self, id: str | int, device_data: dict = {}) -> None:
-        super().__init__(id=id, device_data=device_data)
-
-        if (
-            hasattr(self, "status")
-            and "mode" in self.status
-            and "type" in self.status["mode"]
-        ):
-            cur_mode = self.status["mode"]["type"]
-            if cur_mode == "locked":
-                self.mode = "lock"
-            elif cur_mode == "unlocked":
-                self.mode = "unlock"
-            else:
-                raise InvalidParametersError("Invalid mode")
-        else:
-            raise InvalidParametersError("Invalid status")
+class Lock(Switch):
+    modes = ["locked", "unlocked"]
 
     def lock(self) -> None:
-        self.mode = "lock"
+        self.mode = "locked"
 
     def unlock(self) -> None:
-        self.mode = "unlock"
+        self.mode = "unlocked"
 
     @property
     def cmd(self) -> dict:
-        return {"mode": self.mode}
-
-    @property
-    def type(self) -> str:
-        return self.status["mode"]["type"]
+        return {"mode": "unlock" if self.mode == "unlocked" else "lock"}
 
     @property
     def battery(self) -> int:
-        return self.status["mode"]["battery"]
+        return self.status.get("battery", 0)
+
+    @property
+    def mode(self) -> str | None:
+        if not hasattr(self, "status") or "mode" not in self.status:
+            return None
+        return self.status["mode"].get("type", "locked")
+
+    @mode.setter
+    def mode(self, mode: dict | str) -> None:
+        if isinstance(mode, dict):
+            if "type" not in mode:
+                raise InvalidParametersError("Invalid mode")
+            mode = str(mode.get("type"))
+
+        if mode not in self.modes:
+            raise InvalidParametersError("Invalid mode")
+
+        self.status["mode"]["type"] = mode

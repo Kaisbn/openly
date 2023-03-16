@@ -12,10 +12,14 @@ from openly.const import (
     HEADER_VALUE_CONTENT_TYPE,
     HEADER_VALUE_USER_AGENT,
 )
-from openly.exceptions import RentlyAPIError, RentlyAuthError
+from openly.exceptions import (
+    MissingParametersError,
+    RentlyAPIError,
+    RentlyAuthError,
+)
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def cloud():
     return RentlyCloud()
 
@@ -68,16 +72,27 @@ def test_login_bad_credentials(mock_request, cloud):
     assert HEADER_KEY_AUTHORIZATION not in cloud.headers
 
 
-# @mock.patch('openly.cloud.requests.Session.request', autospec=True)
-# def test_login_rate_limit(mock_request, cloud):
-#     mock_response = requests.models.Response()
-#     mock_response.status_code = 429
-#     mock_request.return_value = mock_response
+@mock.patch("openly.cloud.requests.Session.request", autospec=True)
+def test_login_missing_credentials(mock_request, cloud):
+    response = {"success": False, "message": "Invalid request body"}
+    mock_request.return_value.status_code = 400
+    mock_request.return_value.content = json.dumps(response)
+    mock_request.return_value.json.return_value = response
 
-#     with pytest.raises(RentlyAPIError) as err:
-#         cloud.login("mock_email", "mock_password")
+    with pytest.raises(MissingParametersError):
+        cloud.login("mock_email", None)
 
-#     assert err.value.status_code == 429
+
+@mock.patch("openly.cloud.requests.Session.request", autospec=True)
+@mock.patch("openly.cloud.sleep", return_value=None)
+def test_login_rate_limit(patched_sleep, mock_request, cloud):
+    mock_response = requests.models.Response()
+    mock_response.status_code = 429
+    mock_request.return_value = mock_response
+
+    with pytest.raises(RentlyAPIError) as err:
+        cloud.login("mock_email", "mock_password")
+        assert err.value.status_code == 429
 
 
 @mock.patch("openly.cloud.requests.Session.request", autospec=True)

@@ -171,6 +171,14 @@ class RentlyCloud:
 
         return True
 
+    def logout(self) -> None:
+        # Remove auth payload
+        del self.auth
+        # Set status
+        self.connected = False
+        # Remove auth header
+        self.session.headers.update(self.headers)
+
     def get_hubs(self) -> list[Hub]:
         """
         Retrieve list of hubs
@@ -267,8 +275,11 @@ class RentlyCloud:
             raise RentlyAuthError("Unauthenticated")
 
         device_data = self.call(self.api._get_device_detail_request(device_id))
+        if not device_data:
+            raise InvalidResponseError(f"Unable to fetch device {device_id}")
+
         device_type = device_data.get("device_type")
-        if not device_data or not device_type or device_type not in DEVICES:
+        if not device_type or device_type not in DEVICES:
             raise InvalidResponseError(f"Invalid device: {device_data}")
 
         _LOGGER.debug("Retrieving device with ID %s", device_id)

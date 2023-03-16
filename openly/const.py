@@ -3,6 +3,7 @@ from openly.devices.dimmer import Dimmer
 from openly.devices.hub import Hub
 from openly.devices.leak import LeakSensor
 from openly.devices.lock import Lock
+from openly.devices.switch import Switch
 from openly.devices.thermostat import Thermostat
 
 # Supported devices
@@ -12,6 +13,7 @@ DEVICES = {
     "leakage_sensor": LeakSensor,
     "lock": Lock,
     "thermostat": Thermostat,
+    "switch": Switch,
 }
 
 HEADER_KEY_AUTHORIZATION = "Authorization"

@@ -5,23 +5,32 @@ from openly.exceptions import InvalidParametersError
 class Switch(BaseDevice):
     modes = ["off", "on"]
 
-    mode: str = "off"  # Default mode
-
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
         super().__init__(id, device_data)
 
-        if self.status and "mode" in self.status:
-            if self.status["mode"] not in self.modes:
-                raise InvalidParametersError("Invalid mode")
+        if hasattr(self, "status"):
+            if not isinstance(self.status, dict) or "mode" not in self.status:
+                raise InvalidParametersError("Invalid status")
+
             self.mode = self.status["mode"]
-        else:
-            raise InvalidParametersError("Invalid status")
 
     def on(self):
         self.mode = "on"
 
     def off(self):
         self.mode = "off"
+
+    @property
+    def mode(self) -> str | None:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("mode", "off")
+
+    @mode.setter
+    def mode(self, mode: str) -> None:
+        if mode not in self.modes:
+            raise InvalidParametersError("Invalid mode")
+        self.status["mode"] = mode
 
     @property
     def cmd(self) -> dict:

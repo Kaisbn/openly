@@ -12,7 +12,7 @@ class BaseDevice(ABC):
 
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
         self.__dict__.update(device_data)
-        self._id = id
+        self.id = id
 
     def __str__(self) -> str:
         return f"{type(self).__name__} - {self._id}"
@@ -24,10 +24,6 @@ class BaseDevice(ABC):
     @id.setter
     def id(self, value: str | int) -> None:
         self._id = value
-
-    @id.deleter
-    def id(self) -> None:
-        del self._id
 
     @property
     def name(self) -> str:

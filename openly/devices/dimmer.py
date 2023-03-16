@@ -6,18 +6,8 @@ class Dimmer(Switch):
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
         super().__init__(id, device_data)
 
-        if "status" in device_data and "power" in device_data["status"]:
-            self.power = device_data["status"]["power"]
-        else:
-            raise InvalidParametersError("Invalid status")
-
-    def on(self):
-        super().on()
-        self.power = 100
-
-    def off(self):
-        super().off()
-        self.power = 0
+        if hasattr(self, "status"):
+            self.power = self.status.get("power", 0)
 
     def up(self, step=10):
         self.power = min(self.power + step, 100)
@@ -33,7 +23,7 @@ class Dimmer(Switch):
 
     @property
     def power(self):
-        return self.status["power"]
+        return self.status.get("power", 0)
 
     @power.setter
     def power(self, power):
@@ -45,4 +35,4 @@ class Dimmer(Switch):
 
     @property
     def cmd(self):
-        return {"mode": self.mode, "power": self.power}
+        return super().cmd | {"power": self.power}

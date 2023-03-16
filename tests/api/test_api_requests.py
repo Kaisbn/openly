@@ -43,3 +43,30 @@ def test_hub_detail_request():
 
     assert request["method"] == "GET"
     assert request["url"] == API_DEFAULT_BASE_URL + "hubs/1"
+
+
+def test_device_list_request():
+    generator = APIRequestGenerator()
+    request = generator._get_device_list_request(hub_id=1)
+
+    assert request["method"] == "GET"
+    assert request["url"] == API_DEFAULT_BASE_URL + "hubs/1/devices"
+
+
+def test_device_detail_request():
+    generator = APIRequestGenerator()
+    request = generator._get_device_detail_request(device_id=1)
+
+    assert request["method"] == "GET"
+    assert request["url"] == API_DEFAULT_BASE_URL + "devices/1"
+
+
+def test_device_update_request():
+    generator = APIRequestGenerator()
+    request = generator._update_device_request(
+        device_id=1, commands={"mode": "off"}
+    )
+
+    assert request["method"] == "PUT"
+    assert request["url"] == API_DEFAULT_BASE_URL + "devices/1"
+    assert request["body"] == '{"commands": {"mode": "off"}}'

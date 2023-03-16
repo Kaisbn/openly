@@ -1,64 +1,94 @@
-from openly.devices.base_device import BaseDevice
-from openly.exceptions import InvalidParametersError, MissingParametersError
+from openly.devices.switch import Switch
+from openly.exceptions import InvalidParametersError
 
 
-class Thermostat(BaseDevice):
+class Thermostat(Switch):
     modes = ["auto", "cool", "heat", "off"]
-
-    mode: str = "off"  # Default mode
-    heat_celsius: int = 0  # Default heat
-    cool_celsius: int = 0  # Default cool
-    temp_celsius: int = 0  # Default temp
+    fan_modes = ["auto", "on"]
 
     def __init__(self, id: str | int, device_data: dict = {}) -> None:
         super().__init__(id, device_data)
 
-        if self.status and "mode" in self.status:
-            if self.status["mode"] not in self.modes:
-                raise InvalidParametersError("Invalid mode")
-            self.mode = self.status["mode"]
+        if hasattr(self, "status"):
+            self.heating_setpoint = self.status.get("heating_setpoint", None)
+            self.cooling_setpoint = self.status.get("cooling_setpoint", None)
+            self.room_temp = self.status.get("room_temp", None)
 
-            if "heating_setpoint" not in self.status:
-                raise InvalidParametersError("Invalid heating temperature")
-            self.heat_celsius = self.status["heating_setpoint"]
-
-            if "cooling_setpoint" not in self.status:
-                raise InvalidParametersError("Invalid cooling temperature")
-            self.cool_celsius = self.status["cooling_setpoint"]
-
-            if "room_temp" not in self.status:
-                raise InvalidParametersError("Invalid room temperature")
-            self.temp_celsius = self.status["room_temp"]
-        else:
-            raise InvalidParametersError("Invalid status")
-
-    def off(self):
-        self.mode = "off"
-
-    def auto(self):
+    def auto(self) -> None:
         self.mode = "auto"
 
-    def heat(self):
+    def heat(self) -> None:
         self.mode = "heat"
 
     def cool(self):
         self.mode = "cool"
 
-    def high(self, temp=70):
-        self.cool_celsius = temp
+    @property
+    def heating_setpoint(self) -> int | None:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("heating_setpoint")
 
-    def low(self, temp=70):
-        self.heat_celsius = temp
+    @heating_setpoint.setter
+    def heating_setpoint(self, temp: int) -> None:
+        if not temp or not isinstance(temp, int):
+            raise InvalidParametersError("Invalid temperature")
+        if temp < 50 or temp > 90:
+            raise InvalidParametersError(
+                "Temperature must be between 50 and 90"
+            )
+        if self.cooling_setpoint and self.cooling_setpoint - temp < 3:
+            raise InvalidParametersError(
+                "Heating setpoint must be at least 3 degrees lower than"
+                "cooling setpoint"
+            )
+        self.status["heating_setpoint"] = temp
+
+    @property
+    def cooling_setpoint(self) -> int | None:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("cooling_setpoint")
+
+    @cooling_setpoint.setter
+    def cooling_setpoint(self, temp: int) -> None:
+        if not temp or not isinstance(temp, int):
+            raise InvalidParametersError("Invalid temperature")
+        if temp < 50 or temp > 90:
+            raise InvalidParametersError(
+                "Temperature must be between 50 and 90"
+            )
+        if self.heating_setpoint and temp - self.heating_setpoint < 3:
+            raise InvalidParametersError(
+                "Cooling setpoint must be at least 3 degrees higher than"
+                "heating setpoint"
+            )
+        self.status["cooling_setpoint"] = temp
+
+    @property
+    def room_temp(self) -> int | None:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("room_temp")
+
+    @room_temp.setter
+    def room_temp(self, temp: int) -> None:
+        if not temp or not isinstance(temp, int):
+            raise InvalidParametersError("Invalid temperature")
+        self.status["room_temp"] = int(temp)
+
+    @property
+    def fan(self) -> str:
+        return self.status.get("fan", "auto")
+
+    @property
+    def battery(self) -> int:
+        return self.status.get("battery", 0)
 
     @property
     def cmd(self) -> dict:
-        cmd = {
-            "mode": self.mode,
-            "heating_setpoint": self.heat_celsius,
-            "cooling_setpoint": self.cool_celsius,
+        return super().cmd | {
+            "fan": self.fan,
+            "heating_setpoint": self.heating_setpoint,
+            "cooling_setpoint": self.cooling_setpoint,
         }
-
-        if not all(cmd.values()):
-            raise MissingParametersError("Missing data to generate command")
-
-        return cmd

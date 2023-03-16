@@ -1,31 +1,7 @@
-import json
-import unittest.mock as mock
-
 import pytest
 
-from openly.cloud import RentlyCloud
 
-
-@pytest.fixture(scope="module")
-@mock.patch("openly.cloud.requests.Session.request")
-def cloud(mock_request) -> RentlyCloud:
-    cloud = RentlyCloud()
-
-    response = {
-        "success": True,
-        "access_token": "mock_token",
-        "id_token": "mock_id_token",
-        "refresh_token": "mock_refresh_token",
-    }
-    mock_request.return_value.status_code = 200
-    mock_request.return_value.content = json.dumps(response)
-    mock_request.return_value.json.return_value = response
-
-    cloud.login(email="mock_email", password="mock_password")
-    return cloud
-
-
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def hubs_data() -> dict:
     return {
         "total_records": 1,
@@ -65,7 +41,7 @@ def hubs_data() -> dict:
     }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def hub_data() -> dict:
     return {
         "id": "123243-4353ijefef-34212fef-123",
@@ -134,7 +110,7 @@ def hub_data() -> dict:
     }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def lock_data() -> dict:
     return {
         "id": "12344-4543545-3546",
@@ -175,7 +151,7 @@ def lock_data() -> dict:
     }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def switch_data() -> dict:
     return {
         "id": "1232434-abc343434",
@@ -202,6 +178,78 @@ def switch_data() -> dict:
             "hold_until": "2021-05-27T17:28:27.819Z",
             "power_source": "main",
             "zwave_signal": 3,
+        },
+        "log_mindate": "2022-11-25T00:00:00-08:00",
+    }
+
+
+@pytest.fixture(scope="function")
+def leaksensor_data() -> dict:
+    return {
+        "id": "1232434-abc343434-2324556",
+        "device_name": "Mock Sensor",
+        "occupant_setting": "Mock Sensor",
+        "device_type": "leakage_sensor",
+        "iot_thing_name": "mock id",
+        "remote_device_id": "3",
+        "zwave_security": "non_secure",
+        "model_number": "123-456",
+        "shared_area": False,
+        "location": None,
+        "power_source": "battery",
+        "two_way_power_source": False,
+        "topic_name": "$mock/topic",
+        "last_activity": 162434344,
+        "manufacturer": "Mock manufacturer",
+        "product_name": "Mock product",
+        "settings": {},
+        "status": {"battery": 100, "leakage": "no", "zwave_signal": 0},
+        "log_mindate": "2023-12-21T00:00:00-08:00",
+    }
+
+
+@pytest.fixture(scope="function")
+def thermostat_data() -> dict:
+    return {
+        "id": "1232434-abc343434-231111111",
+        "device_name": "Mock Thermostat",
+        "occupant_setting": "Mock Thermostat",
+        "device_type": "thermostat",
+        "iot_thing_name": "mock id",
+        "remote_device_id": "4",
+        "zwave_security": "non_secure",
+        "model_number": "1234-5678",
+        "room_humidity": None,
+        "shared_area": False,
+        "location": None,
+        "power_source": "battery",
+        "two_way_power_source": False,
+        "topic_name": "$mock/topic",
+        "last_activity": 1678111111,
+        "third_party_device_id": None,
+        "third_party_device_type": None,
+        "manufacturer": "Mock manufacturer",
+        "product_name": "Mock product",
+        "settings": {
+            "hold_duration": 540,
+            "schedule": "12345-abcdef-12345|2022-01-01T12:45:10Z",
+        },
+        "status": {
+            "fan": "auto",
+            "mode": "auto",
+            "source": "physical",
+            "battery": 100,
+            "agent_id": 123,
+            "room_temp": 71,
+            "hold_until": "2022-01-01T05:55:25.302Z",
+            "occupant_id": 7793,
+            "schedule_id": "614247eb-d34a-4e6c-98ec-6545a27e386b",
+            "power_source": "battery",
+            "zwave_signal": 3,
+            "operating_state": "Pending_Cool",
+            "cooling_setpoint": 72,
+            "heating_setpoint": 69,
+            "battery_zwave": 100,
         },
         "log_mindate": "2022-11-25T00:00:00-08:00",
     }
