@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openly-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python API wrapper for Rently Smart Home hubs and devices"
 authors = ["Kais Bennaceur <bennaceur.kais@me.com>"]
 license = "GPL-3.0-or-later"
