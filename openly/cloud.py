@@ -1,7 +1,9 @@
 import json
+from datetime import datetime
 from time import sleep
 from typing import Any, Optional, Union
 
+import jwt
 import requests
 
 import openly.util as util
@@ -29,10 +31,10 @@ _LOGGER = util.setupLogger()
 
 
 class RentlyCloud:
-    api: APIRequestGenerator
-    auth: dict = {}
-    connected: bool = False
-    session: requests.Session
+    _api: APIRequestGenerator
+    _auth: dict = {}
+    _session: requests.Session
+    _token: dict = {}  # decoded token
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None
@@ -47,11 +49,12 @@ class RentlyCloud:
                 useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
-        self.session = requests.Session()
-        self.api = APIRequestGenerator(url, login_url)
+        self._session = requests.Session()
+        self._api = APIRequestGenerator(url, login_url)
 
     @property
     def headers(self) -> dict:
+        """HTTP Headers to use"""
         headers = {
             HEADER_KEY_USER_AGENT: HEADER_VALUE_USER_AGENT,
             HEADER_KEY_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
@@ -64,9 +67,35 @@ class RentlyCloud:
 
     @property
     def token(self) -> Union[str, None]:
-        if not (self.connected and self.auth):
+        """Access token"""
+        if not self._auth or "access_token" not in self._auth:
             return None
-        return self.auth["access_token"]
+        return self._auth["access_token"]
+
+    @token.setter
+    def token(self, value: str) -> None:
+        """Set token"""
+        try:
+            self._token = jwt.decode(
+                value, options={"verify_signature": False}
+            )
+            self._auth["access_token"] = value
+        except jwt.ExpiredSignatureError:
+            self.logout()
+
+    @token.deleter
+    def token(self) -> None:
+        """Delete token"""
+        del self._auth
+        del self._token
+
+    @property
+    def connected(self) -> bool:
+        """Connection status"""
+        if not self._token:
+            return False
+
+        return self._token["exp"] > datetime.now().timestamp()
 
     def call(self, req: dict[str, Any]) -> dict[str, Any]:
         """
@@ -87,7 +116,7 @@ class RentlyCloud:
             attempts += 1
 
             try:
-                res = self.session.request(
+                res = self._session.request(
                     method=req["method"],
                     url=req["url"],
                     data=req.get("body"),
@@ -160,24 +189,34 @@ class RentlyCloud:
                 "Email and password must be provided to authenticate."
             )
 
-        res = self.call(self.api._get_oauth_token_request(email, password))
+        res = self.call(self._api.get_oauth_token_request(email, password))
 
-        if not res.get("success"):
+        if not res.get("success") or "access_token" not in res:
             raise RentlyAuthError(res.get("message", "Login failed"))
 
-        self.auth = res
-        self.connected = True
-        self.session.headers.update(self.headers)
+        # Save auth response
+        self._auth = res
+        # Set token and verify
+        self.token = res["access_token"]
+        if not self.token:
+            return False
+
+        # Update session headers
+        self._session.headers.update(self.headers)
 
         return True
 
     def logout(self) -> None:
+        """
+        Logout user
+
+        Returns:
+            None
+        """
         # Remove auth payload
-        del self.auth
-        # Set status
-        self.connected = False
+        del self.token
         # Remove auth header
-        self.session.headers.update(self.headers)
+        self._session.headers.update(self.headers)
 
     def get_hubs(self) -> list[Hub]:
         """
@@ -192,7 +231,7 @@ class RentlyCloud:
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
 
-        hubs_data = self.call(self.api._get_hub_list_request())
+        hubs_data = self.call(self._api.get_hub_list_request())
         if "hubs" not in hubs_data:
             raise InvalidResponseError("Invalid hubs list")
 
@@ -220,7 +259,7 @@ class RentlyCloud:
 
         return Hub(
             id=hub_id,
-            device_data=self.call(self.api._get_hub_detail_request(hub_id)),
+            device_data=self.call(self._api.get_hub_detail_request(hub_id)),
         )
 
     def get_devices(self, hub_id: Union[str, int]) -> list[BaseDevice]:
@@ -239,7 +278,7 @@ class RentlyCloud:
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
 
-        devices_data = self.call(self.api._get_device_list_request(hub_id))
+        devices_data = self.call(self._api.get_device_list_request(hub_id))
         if not devices_data:
             raise InvalidResponseError("Invalid devices list")
 
@@ -274,7 +313,7 @@ class RentlyCloud:
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
 
-        device_data = self.call(self.api._get_device_detail_request(device_id))
+        device_data = self.call(self._api.get_device_detail_request(device_id))
         if not device_data:
             raise InvalidResponseError(f"Unable to fetch device {device_id}")
 
@@ -304,7 +343,7 @@ class RentlyCloud:
             "Sending payload %s to %s", json.dumps(command), device_id
         )
 
-        self.call(self.api._update_device_request(device_id, command))
+        self.call(self._api.update_device_request(device_id, command))
 
     def update_device_status(self, device) -> None:
         """

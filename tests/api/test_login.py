@@ -32,13 +32,8 @@ def test_headers(cloud):
 
 
 @mock.patch("openly.cloud.requests.Session.request")
-def test_login_success(mock_request, cloud):
-    response = {
-        "success": True,
-        "access_token": "mock_token",
-        "id_token": "mock_id_token",
-        "refresh_token": "mock_refresh_token",
-    }
+def test_login_success(mock_request, cloud, tokens):
+    response = tokens | {"success": True}
     mock_request.return_value.status_code = 200
     mock_request.return_value.content = json.dumps(response)
     mock_request.return_value.json.return_value = response
@@ -48,7 +43,7 @@ def test_login_success(mock_request, cloud):
     assert result is True
     assert cloud.connected is True
 
-    assert cloud.auth == response
+    assert cloud._auth == response
     assert cloud.token == response["access_token"]
 
     assert HEADER_KEY_AUTHORIZATION in cloud.headers
@@ -66,7 +61,6 @@ def test_login_bad_credentials(mock_request, cloud):
         cloud.login("mock_email", "mock_password")
 
     assert not cloud.connected
-    assert not cloud.auth
     assert not cloud.token
 
     assert HEADER_KEY_AUTHORIZATION not in cloud.headers
@@ -105,7 +99,6 @@ def test_login_server_error(mock_request, cloud):
         cloud.login("mock_email", "mock_password")
 
     assert not cloud.connected
-    assert not cloud.auth
     assert not cloud.token
 
     assert HEADER_KEY_AUTHORIZATION not in cloud.headers

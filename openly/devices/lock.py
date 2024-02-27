@@ -3,7 +3,7 @@ from openly.exceptions import InvalidParametersError
 
 
 class Lock(Switch):
-    modes = ["locked", "unlocked"]
+    modes = ["locked", "unlocked"]  # TODO: Add "jammed" support
 
     def lock(self) -> None:
         self.mode = "locked"

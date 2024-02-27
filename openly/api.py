@@ -68,7 +68,7 @@ class APIRequestGenerator:
         """
         self.api_routes = APIRouteGenerator(url, login_url)
 
-    def _get_oauth_token_request(
+    def get_oauth_token_request(
         self, email: str, password: str
     ) -> dict[str, Any]:
         """
@@ -87,7 +87,7 @@ class APIRequestGenerator:
             "body": json.dumps({"email": email, "password": password}),
         }
 
-    def _get_hub_list_request(self) -> dict[str, Any]:
+    def get_hub_list_request(self) -> dict[str, Any]:
         """
         Retrieve list of hubs
 
@@ -99,7 +99,7 @@ class APIRequestGenerator:
             "url": self.api_routes.hubs,
         }
 
-    def _get_hub_detail_request(
+    def get_hub_detail_request(
         self, hub_id: Union[str, int]
     ) -> dict[str, Any]:
         """
@@ -116,7 +116,7 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}"),
         }
 
-    def _get_device_list_request(
+    def get_device_list_request(
         self, hub_id: Union[str, int]
     ) -> dict[str, Any]:
         """
@@ -133,7 +133,7 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}_devices"),
         }
 
-    def _get_device_detail_request(
+    def get_device_detail_request(
         self, device_id: Union[str, int]
     ) -> dict[str, Any]:
         """
@@ -150,7 +150,7 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"devices_{device_id}"),
         }
 
-    def _update_device_request(
+    def update_device_request(
         self, device_id: Union[str, int], commands: Any
     ) -> dict[str, Any]:
         """

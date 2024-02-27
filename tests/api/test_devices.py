@@ -26,7 +26,7 @@ def test_get_devices(mock_request, cloud, devices_data):
 
 
 @mock.patch("openly.cloud.requests.Session.request", autospec=True)
-def test_get_devices_offline(mock_request, cloud, devices_data):
+def test_get_devices_offline(mock_request, cloud):
     mock_request.return_value.status_code = 401
     cloud.logout()
 
@@ -41,6 +41,17 @@ def test_get_devices_empty(mock_request, cloud):
     mock_request.return_value.json.return_value = []
 
     with pytest.raises(InvalidResponseError):
+        cloud.get_devices(hub_id=1)
+
+
+@mock.patch("openly.cloud.requests.Session.request", autospec=True)
+def test_get_devices_token_expired(mock_request, cloud):
+    mock_request.return_value.status_code = 401
+
+    # Set token expiration
+    cloud._token["exp"] = 1677530305  # 2023-02-27T20:38:25.356Z
+
+    with pytest.raises(RentlyAuthError):
         cloud.get_devices(hub_id=1)
 
 

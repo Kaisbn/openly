@@ -21,7 +21,7 @@ def test_custom_api_request_generator():
 
 def test_oauth_request():
     generator = APIRequestGenerator()
-    request = generator._get_oauth_token_request(
+    request = generator.get_oauth_token_request(
         email="test@test.com", password="test"
     )
 
@@ -31,7 +31,7 @@ def test_oauth_request():
 
 def test_hub_list_request():
     generator = APIRequestGenerator()
-    request = generator._get_hub_list_request()
+    request = generator.get_hub_list_request()
 
     assert request["method"] == "GET"
     assert request["url"] == API_DEFAULT_BASE_URL + "hubs"
@@ -39,7 +39,7 @@ def test_hub_list_request():
 
 def test_hub_detail_request():
     generator = APIRequestGenerator()
-    request = generator._get_hub_detail_request(hub_id=1)
+    request = generator.get_hub_detail_request(hub_id=1)
 
     assert request["method"] == "GET"
     assert request["url"] == API_DEFAULT_BASE_URL + "hubs/1"
@@ -47,7 +47,7 @@ def test_hub_detail_request():
 
 def test_device_list_request():
     generator = APIRequestGenerator()
-    request = generator._get_device_list_request(hub_id=1)
+    request = generator.get_device_list_request(hub_id=1)
 
     assert request["method"] == "GET"
     assert request["url"] == API_DEFAULT_BASE_URL + "hubs/1/devices"
@@ -55,7 +55,7 @@ def test_device_list_request():
 
 def test_device_detail_request():
     generator = APIRequestGenerator()
-    request = generator._get_device_detail_request(device_id=1)
+    request = generator.get_device_detail_request(device_id=1)
 
     assert request["method"] == "GET"
     assert request["url"] == API_DEFAULT_BASE_URL + "devices/1"
@@ -63,7 +63,7 @@ def test_device_detail_request():
 
 def test_device_update_request():
     generator = APIRequestGenerator()
-    request = generator._update_device_request(
+    request = generator.update_device_request(
         device_id=1, commands={"mode": "off"}
     )
 
