@@ -206,6 +206,29 @@ class RentlyCloud:
 
         return True
 
+    def refresh(self) -> bool:
+        """
+        Refresh the existing token and retrieve a new one
+
+        Returns:
+            bool: Connection status
+        """
+        if not self._auth:
+            return MissingParametersError("No token to refresh")
+
+        res = self.call(self._api.get_oauth_refresh_request(self._auth["refresh_token"]))
+
+        if not res.get("success") or "access_token" not in res:
+            raise RentlyAuthError(res.get("message", "Refresh failed"))
+
+        # Save auth response
+        self.token = res["access_token"]
+        if not self.token:
+            return False
+
+        # Update session headers
+        self._session.headers.update(self.headers)
+
     def logout(self) -> None:
         """
         Logout user
