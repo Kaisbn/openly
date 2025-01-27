@@ -22,6 +22,10 @@ jobs:
         uses: abatilo/actions-poetry@v2.3.0
         with:
           poetry-version: ${{ matrix.poetry-version }}
+      - name: Dynamic versioning
+        run: |
+          poetry self add "poetry-dynamic-versioning[plugin]"
+          poetry dynamic-versioning enable
       - name: Publish
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
