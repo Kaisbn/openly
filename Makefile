@@ -4,13 +4,9 @@ PYMODULE  = openly
 TESTS	  = tests
 MAXLENGTH = 79
 
-all: type test lint isort-check black-check bandit safety
+all: test check
 
-lint:
-	$(CMD) flake8 $(PYMODULE) $(TESTS)
-
-type:
-	$(CMD) mypy $(PYMODULE) $(TESTS)
+check: type-check format-check bandit safety
 
 test:
 	$(CMD) pytest --cov=$(PYMODULE) $(TESTS)
@@ -21,23 +17,20 @@ test-cov:
 test-cov-xml:
 	$(CMD) pytest --cov=$(PYMODULE) $(TESTS) --cov-report xml
 
-isort:
-	$(CMD) isort --profile black --line-length $(MAXLENGTH) $(PYMODULE) $(TESTS)
+type-check:
+	$(CMD) mypy $(PYMODULE) $(TESTS)
 
-isort-check:
-	$(CMD) isort --check-only --profile black --line-length $(MAXLENGTH) $(PYMODULE) $(TESTS)
+format:
+	$(CMD) ruff format $(PYMODULE) $(TESTS)
 
-black:
-	$(CMD) black --line-length $(MAXLENGTH) $(PYMODULE) $(TESTS)
-
-black-check:
-	$(CMD) black --check --line-length $(MAXLENGTH) $(PYMODULE) $(TESTS)
+format-check:
+	$(CMD) ruff check $(PYMODULE) $(TESTS)
 
 bandit:
 	$(CMD) bandit --recursive $(PYMODULE)
 
 safety:
-	$(CMD) safety --disable-optional-telemetry-data check
+	$(CMD) safety --disable-optional-telemetry scan
 
 clean:
 	git clean -Xdf # Delete all files in .gitignore

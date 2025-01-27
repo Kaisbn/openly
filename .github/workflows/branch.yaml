@@ -44,12 +44,10 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
         run: poetry install
-      - name: Run black
-        run: make black-check
-      - name: Run isort
-        run: make isort-check
-      - name: Run flake8
-        run: make lint
+      - name: Static code analysis
+        run: make format-check
+      - name: Type checking
+        run: make type-check
   safety:
     strategy:
       fail-fast: false
@@ -69,7 +67,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
         run: poetry install
-      - name: Run bandit
+      - name: Security scan
         run: make bandit
-      - name: Run safety
+      - name: Vulnerability scan
         run: make safety
