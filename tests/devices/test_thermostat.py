@@ -9,7 +9,7 @@ from openly.exceptions import InvalidParametersError
 
 def test_thermostat_str_id(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.id == thermostat_data["id"]
@@ -18,7 +18,7 @@ def test_thermostat_str_id(thermostat_data):
 def test_thermostat_int_id(thermostat_data):
     thermostat_data["id"] = 123
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.id == thermostat_data["id"]
@@ -26,7 +26,7 @@ def test_thermostat_int_id(thermostat_data):
 
 def test_thermostat_name(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.name == thermostat_data["device_name"]
@@ -35,7 +35,7 @@ def test_thermostat_name(thermostat_data):
 def test_thermostat_name_none(thermostat_data):
     del thermostat_data["device_name"]
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     with pytest.raises(AttributeError):
@@ -44,10 +44,10 @@ def test_thermostat_name_none(thermostat_data):
 
 def test_thermostat_cmd(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
-    assert thermostat.cmd == {
+    assert thermostat.cmd["commands"] == {
         "mode": thermostat_data["status"]["mode"],
         "fan": thermostat_data["status"]["fan"],
         "heating_setpoint": thermostat_data["status"]["heating_setpoint"],
@@ -57,7 +57,7 @@ def test_thermostat_cmd(thermostat_data):
 
 def test_thermostat_auto(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     thermostat.auto()
@@ -67,7 +67,7 @@ def test_thermostat_auto(thermostat_data):
 
 def test_thermostat_cool(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     thermostat.cool()
@@ -77,7 +77,7 @@ def test_thermostat_cool(thermostat_data):
 
 def test_thermostat_heat(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     thermostat.heat()
@@ -87,7 +87,7 @@ def test_thermostat_heat(thermostat_data):
 
 def test_thermostat_off(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     thermostat.off()
@@ -97,7 +97,7 @@ def test_thermostat_off(thermostat_data):
 
 def test_thermostat_battery(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.battery == thermostat_data["status"]["battery"]
@@ -106,7 +106,7 @@ def test_thermostat_battery(thermostat_data):
 def test_thermostat_battery_none(thermostat_data):
     del thermostat_data["status"]["battery"]
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.battery == 0
@@ -114,7 +114,7 @@ def test_thermostat_battery_none(thermostat_data):
 
 def test_thermostat_mode(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.mode == thermostat_data["status"]["mode"]
@@ -124,26 +124,26 @@ def test_thermostat_mode_none(thermostat_data):
     del thermostat_data["status"]["mode"]
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_mode_invalid(thermostat_data):
     thermostat_data["status"]["mode"] = "invalid"
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_mode_no_type(thermostat_data):
     del thermostat_data["status"]["mode"]
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_heating_setpoint(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert (
@@ -156,21 +156,21 @@ def test_thermostat_heating_setpoint_none(thermostat_data):
     del thermostat_data["status"]["heating_setpoint"]
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_heating_setpoint_too_low(thermostat_data):
     thermostat_data["status"]["heating_setpoint"] = 40
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_heating_setpoint_too_high(thermostat_data):
     thermostat_data["status"]["heating_setpoint"] = 100
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_heating_setpoint_too_close(thermostat_data):
@@ -179,12 +179,12 @@ def test_thermostat_heating_setpoint_too_close(thermostat_data):
     )
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_cooling_setpoint(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert (
@@ -197,21 +197,21 @@ def test_thermostat_cooling_setpoint_none(thermostat_data):
     del thermostat_data["status"]["cooling_setpoint"]
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_cooling_setpoint_too_low(thermostat_data):
     thermostat_data["status"]["cooling_setpoint"] = 40
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_cooling_setpoint_too_high(thermostat_data):
     thermostat_data["status"]["cooling_setpoint"] = 100
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_cooling_setpoint_too_close(thermostat_data):
@@ -220,12 +220,12 @@ def test_thermostat_cooling_setpoint_too_close(thermostat_data):
     )
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 def test_thermostat_room_temp(thermostat_data):
     thermostat = Thermostat(
-        id=thermostat_data["id"], device_data=thermostat_data
+        device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
     assert thermostat.room_temp == thermostat_data["status"]["room_temp"]
@@ -235,7 +235,7 @@ def test_thermostat_room_temp_none(thermostat_data):
     del thermostat_data["status"]["room_temp"]
 
     with pytest.raises(InvalidParametersError):
-        Thermostat(id=thermostat_data["id"], device_data=thermostat_data)
+        Thermostat(device_id=thermostat_data["id"], device_data=thermostat_data)
 
 
 @mock.patch("openly.cloud.requests.Session.request", autospec=True)

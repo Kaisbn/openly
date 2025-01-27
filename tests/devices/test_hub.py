@@ -64,30 +64,30 @@ def test_get_hub_offline(mock_request, cloud, hub_data):
 
 def test_hub_str_id():
     id = "123243-4353ijefef-34212fef-123"
-    hub = Hub(id=id)
+    hub = Hub(device_id=id)
 
-    assert hub.id == id
+    assert hub.device_id == id
 
 
 def test_hub_int_id():
     id = 123
-    hub = Hub(id=id)
+    hub = Hub(device_id=id)
 
-    assert hub.id == id
+    assert hub.device_id == id
 
 
 def test_hub_name():
     id = "123243-4353ijefef-34212fef-123"
-    hub = Hub(id=id, device_data={"home_name": "Mock Hub"})
+    hub = Hub(device_id=id, device_data={"home_name": "Mock Hub"})
 
     assert hub.name
     assert hub.home_name == hub.name
-    assert str(hub) == f"Hub - {hub.id}"
+    assert str(hub) == f"Hub - {hub.device_id}"
 
 
 def test_hub_name_none():
     id = "123243-4353ijefef-34212fef-123"
-    hub = Hub(id=id)
+    hub = Hub(device_id=id)
 
     with pytest.raises(AttributeError):
         assert not hub.name
@@ -95,6 +95,6 @@ def test_hub_name_none():
 
 def test_hub_cmd():
     id = "123243-4353ijefef-34212fef-123"
-    hub = Hub(id=id)
+    hub = Hub(device_id=id)
 
     assert hub.cmd == {}

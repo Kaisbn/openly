@@ -8,7 +8,7 @@ from openly.exceptions import InvalidParametersError
 
 
 def test_dimmer_str_id(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     assert dimmer.id == switch_data["id"]
 
@@ -16,13 +16,13 @@ def test_dimmer_str_id(switch_data):
 def test_dimmer_int_id(switch_data):
     data_copy = switch_data.copy()
     data_copy["id"] = 123
-    dimmer = Dimmer(id=switch_data["id"], device_data=data_copy)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=data_copy)
 
-    assert dimmer.id == switch_data["id"]
+    assert dimmer.device_id == switch_data["id"]
 
 
 def test_dimmer_name(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     assert dimmer.name == switch_data["device_name"]
 
@@ -30,14 +30,14 @@ def test_dimmer_name(switch_data):
 def test_dimmer_name_none(switch_data):
     data_copy = switch_data.copy()
     del data_copy["device_name"]
-    dimmer = Dimmer(id=switch_data["id"], device_data=data_copy)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=data_copy)
 
     with pytest.raises(AttributeError):
         assert not dimmer.name
 
 
 def test_dimmer_cmd_off(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     dimmer.off()
 
@@ -48,7 +48,7 @@ def test_dimmer_cmd_off(switch_data):
 
 
 def test_dimmer_cmd_on(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     dimmer.on()
 
@@ -59,21 +59,21 @@ def test_dimmer_cmd_on(switch_data):
 
 
 def test_dimmer_invalid_power(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     with pytest.raises(InvalidParametersError):
         dimmer.power = "invalid"
 
 
 def test_dimmer_power_too_high(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     with pytest.raises(InvalidParametersError):
         dimmer.power = 101
 
 
 def test_dimmer_power_up(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
     cur_pow = dimmer.power
     dimmer.up(50)
 
@@ -81,7 +81,7 @@ def test_dimmer_power_up(switch_data):
 
 
 def test_dimmer_power_down(switch_data):
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
     cur_pow = dimmer.power
     dimmer.down(50)
 
@@ -91,7 +91,7 @@ def test_dimmer_power_down(switch_data):
 def test_dimmer_status_none(switch_data):
     del switch_data["status"]
 
-    dimmer = Dimmer(id=switch_data["id"], device_data=switch_data)
+    dimmer = Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
     assert not hasattr(dimmer, "status")
 
@@ -100,14 +100,14 @@ def test_dimmer_status_empty(switch_data):
     switch_data["status"] = {}
 
     with pytest.raises(InvalidParametersError):
-        Dimmer(id=switch_data["id"], device_data=switch_data)
+        Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
 
 def test_dimmer_status_invalid(switch_data):
     switch_data["status"] = "invalid"
 
     with pytest.raises(InvalidParametersError):
-        Dimmer(id=switch_data["id"], device_data=switch_data)
+        Dimmer(device_id=switch_data["id"], device_data=switch_data)
 
 
 @mock.patch("openly.cloud.requests.Session.request", autospec=True)

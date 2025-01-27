@@ -260,7 +260,7 @@ class RentlyCloud:
 
         _LOGGER.debug("Retrieving list of hubs")
 
-        return [Hub(id=h["id"]) for h in hubs_data["hubs"]]
+        return [Hub(device_id=h["id"]) for h in hubs_data["hubs"]]
 
     def get_hub(self, hub_id: Union[str, int]) -> Hub:
         """
@@ -281,7 +281,7 @@ class RentlyCloud:
         _LOGGER.debug("Retrieving hub with ID %s", hub_id)
 
         return Hub(
-            id=hub_id,
+            device_id=hub_id,
             device_data=self.call(self._api.get_hub_detail_request(hub_id)),
         )
 
@@ -313,7 +313,7 @@ class RentlyCloud:
                 for device_data in device_list:
                     device_objs.append(
                         DEVICES[device_type](
-                            id=device_data["id"],
+                            device_id=device_data["id"],
                             device_data=device_data,
                         )
                     )
@@ -346,7 +346,7 @@ class RentlyCloud:
 
         _LOGGER.debug("Retrieving device with ID %s", device_id)
 
-        return DEVICES[device_type](id=device_id, device_data=device_data)
+        return DEVICES[device_type](device_id=device_id, device_data=device_data)
 
     def send_command(self, device_id: Union[str, int], command: Any) -> None:
         """

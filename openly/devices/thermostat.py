@@ -2,26 +2,36 @@ from openly.devices.switch import Switch
 from openly.exceptions import InvalidParametersError
 
 
-class Thermostat(Switch):
-    modes = ["auto", "cool", "heat", "off"]
-    fan_modes = ["auto", "on"]
+FAN_ON = "on"
+FAN_AUTO = "auto"
 
-    def __init__(self, id: str | int, device_data: dict = {}) -> None:
-        super().__init__(id, device_data)
+HVAC_MODE_OFF = "off"
+HVAC_MODE_HEAT = "heat"
+HVAC_MODE_COOL = "cool"
+HVAC_MODE_AUTO = "auto"
+
+
+class Thermostat(Switch):
+    modes = [HVAC_MODE_AUTO, HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_OFF]
+
+    def __init__(self, device_id: str | int, device_data: dict = {}) -> None:
+        super().__init__(device_id, device_data)
 
         if hasattr(self, "status"):
             self.heating_setpoint = self.status.get("heating_setpoint", None)
             self.cooling_setpoint = self.status.get("cooling_setpoint", None)
             self.room_temp = self.status.get("room_temp", None)
+        if hasattr(self, "settings"):
+            self.fan_duration = self.settings.get("fan_on_time", 0)
 
     def auto(self) -> None:
-        self.mode = "auto"
+        self.mode = HVAC_MODE_AUTO
 
     def heat(self) -> None:
-        self.mode = "heat"
+        self.mode = HVAC_MODE_HEAT
 
     def cool(self):
-        self.mode = "cool"
+        self.mode = HVAC_MODE_COOL
 
     @property
     def heating_setpoint(self) -> int | None:
@@ -81,14 +91,47 @@ class Thermostat(Switch):
     def fan(self) -> str:
         return self.status.get("fan", "auto")
 
+    @fan.setter
+    def fan(self, mode: str) -> None:
+        if mode not in [FAN_AUTO, FAN_ON]:
+            raise InvalidParametersError("Invalid fan mode")
+        self.status["fan"] = mode
+
+    @property
+    def fan_duration(self) -> int:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("fan_duration") if self.fan == FAN_ON else None
+
+    @fan_duration.setter
+    def fan_duration(self, duration: int) -> None:
+        # Duration is in minutes, 12 hours max
+        if not isinstance(duration, int) or duration < 0 or duration > 720:
+            raise InvalidParametersError("Invalid duration")
+        if not duration:
+            self.fan = FAN_AUTO
+        self.status["fan_duration"] = duration or 0
+
     @property
     def battery(self) -> int:
         return self.status.get("battery", 0)
 
+    @battery.setter
+    def battery(self, level: int) -> None:
+        if not isinstance(level, int) or level < 0 or level > 100:
+            raise InvalidParametersError("Invalid battery level")
+        self.status["battery"] = level
+
     @property
     def cmd(self) -> dict:
-        return super().cmd | {
-            "fan": self.fan,
-            "heating_setpoint": self.heating_setpoint,
-            "cooling_setpoint": self.cooling_setpoint,
+        return {
+            "commands": {
+                "mode": self.mode,
+                "heating_setpoint": self.heating_setpoint,
+                "cooling_setpoint": self.cooling_setpoint,
+                "fan": self.fan
+            },
+            "settings": {
+                "fan_on_mode": self.fan_duration
+            }
         }

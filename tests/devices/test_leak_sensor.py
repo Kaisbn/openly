@@ -9,7 +9,7 @@ from openly.exceptions import InvalidParametersError
 
 def test_leak_sensor_str_id(leaksensor_data):
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.id == leaksensor_data["id"]
@@ -18,7 +18,7 @@ def test_leak_sensor_str_id(leaksensor_data):
 def test_leak_sensor_int_id(leaksensor_data):
     leaksensor_data["id"] = 123
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.id == leaksensor_data["id"]
@@ -26,7 +26,7 @@ def test_leak_sensor_int_id(leaksensor_data):
 
 def test_leak_sensor_name(leaksensor_data):
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.name == leaksensor_data["device_name"]
@@ -35,7 +35,7 @@ def test_leak_sensor_name(leaksensor_data):
 def test_leak_sensor_name_none(leaksensor_data):
     del leaksensor_data["device_name"]
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     with pytest.raises(AttributeError):
@@ -44,7 +44,7 @@ def test_leak_sensor_name_none(leaksensor_data):
 
 def test_leak_sensor_battery(leaksensor_data):
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.battery == leaksensor_data["status"]["battery"]
@@ -53,7 +53,7 @@ def test_leak_sensor_battery(leaksensor_data):
 def test_leak_sensor_battery_none(leaksensor_data):
     del leaksensor_data["status"]["battery"]
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.battery == 0
@@ -61,7 +61,7 @@ def test_leak_sensor_battery_none(leaksensor_data):
 
 def test_leak_sensor_valid_mode(leaksensor_data):
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
 
     assert leaksensor.mode == leaksensor_data["status"]["leakage"]
@@ -71,14 +71,14 @@ def test_leak_sensor_invalid_mode(leaksensor_data):
     leaksensor_data["status"]["leakage"] = "invalid"
 
     with pytest.raises(InvalidParametersError):
-        LeakSensor(id=leaksensor_data["id"], device_data=leaksensor_data)
+        LeakSensor(device_id=leaksensor_data["id"], device_data=leaksensor_data)
 
 
 def test_leak_sensor_status_none(leaksensor_data):
     del leaksensor_data["status"]
 
     leaksensor = LeakSensor(
-        id=leaksensor_data["id"], device_data=leaksensor_data
+        device_id=leaksensor_data["id"], device_data=leaksensor_data
     )
     assert not hasattr(leaksensor, "status")
 

@@ -3,8 +3,8 @@ from openly.exceptions import InvalidParametersError
 
 
 class Dimmer(Switch):
-    def __init__(self, id: str | int, device_data: dict = {}) -> None:
-        super().__init__(id, device_data)
+    def __init__(self, device_id: str | int, device_data: dict = {}) -> None:
+        super().__init__(device_id, device_data)
 
         if hasattr(self, "status"):
             self.power = self.status.get("power", 0)
