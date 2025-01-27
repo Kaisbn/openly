@@ -1,4 +1,5 @@
 """Constants for the Rently integration."""
+
 from openly.devices.dimmer import Dimmer
 from openly.devices.hub import Hub
 from openly.devices.leak import LeakSensor

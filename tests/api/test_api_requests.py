@@ -7,7 +7,6 @@ def test_default_api_request_generator():
 
     assert generator.api_routes
     assert generator.api_routes._BASE_URL == API_DEFAULT_BASE_URL
-    assert generator.api_routes._BASE_LOGIN_URL == API_DEFAULT_BASE_URL
 
 
 def test_custom_api_request_generator():
@@ -16,14 +15,11 @@ def test_custom_api_request_generator():
 
     assert generator.api_routes
     assert generator.api_routes._BASE_URL == base_url
-    assert generator.api_routes._BASE_LOGIN_URL == base_url
 
 
 def test_oauth_request():
     generator = APIRequestGenerator()
-    request = generator.get_oauth_token_request(
-        email="test@test.com", password="test"
-    )
+    request = generator.get_oauth_token_request(email="test@test.com", password="test")
 
     assert request["method"] == "POST"
     assert request["url"] == API_DEFAULT_BASE_URL + "oauth/token"
@@ -63,9 +59,7 @@ def test_device_detail_request():
 
 def test_device_update_request():
     generator = APIRequestGenerator()
-    request = generator.update_device_request(
-        device_id=1, commands={"mode": "off"}
-    )
+    request = generator.update_device_request(device_id=1, commands={"mode": "off"})
 
     assert request["method"] == "PUT"
     assert request["url"] == API_DEFAULT_BASE_URL + "devices/1"

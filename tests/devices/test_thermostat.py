@@ -146,10 +146,7 @@ def test_thermostat_heating_setpoint(thermostat_data):
         device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
-    assert (
-        thermostat.heating_setpoint
-        == thermostat_data["status"]["heating_setpoint"]
-    )
+    assert thermostat.heating_setpoint == thermostat_data["status"]["heating_setpoint"]
 
 
 def test_thermostat_heating_setpoint_none(thermostat_data):
@@ -187,10 +184,7 @@ def test_thermostat_cooling_setpoint(thermostat_data):
         device_id=thermostat_data["id"], device_data=thermostat_data
     )
 
-    assert (
-        thermostat.cooling_setpoint
-        == thermostat_data["status"]["cooling_setpoint"]
-    )
+    assert thermostat.cooling_setpoint == thermostat_data["status"]["cooling_setpoint"]
 
 
 def test_thermostat_cooling_setpoint_none(thermostat_data):

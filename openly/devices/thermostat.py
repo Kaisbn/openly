@@ -1,7 +1,6 @@
 from openly.devices.switch import Switch
 from openly.exceptions import InvalidParametersError
 
-
 FAN_ON = "on"
 FAN_AUTO = "auto"
 
@@ -44,13 +43,10 @@ class Thermostat(Switch):
         if not temp or not isinstance(temp, int):
             raise InvalidParametersError("Invalid temperature")
         if temp < 50 or temp > 90:
-            raise InvalidParametersError(
-                "Temperature must be between 50 and 90"
-            )
+            raise InvalidParametersError("Temperature must be between 50 and 90")
         if self.cooling_setpoint and self.cooling_setpoint - temp < 3:
             raise InvalidParametersError(
-                "Heating setpoint must be at least 3 degrees lower than"
-                "cooling setpoint"
+                "Heating setpoint must be at least 3 degrees lower thancooling setpoint"
             )
         self.status["heating_setpoint"] = temp
 
@@ -65,9 +61,7 @@ class Thermostat(Switch):
         if not temp or not isinstance(temp, int):
             raise InvalidParametersError("Invalid temperature")
         if temp < 50 or temp > 90:
-            raise InvalidParametersError(
-                "Temperature must be between 50 and 90"
-            )
+            raise InvalidParametersError("Temperature must be between 50 and 90")
         if self.heating_setpoint and temp - self.heating_setpoint < 3:
             raise InvalidParametersError(
                 "Cooling setpoint must be at least 3 degrees higher than"
@@ -98,7 +92,7 @@ class Thermostat(Switch):
         self.status["fan"] = mode
 
     @property
-    def fan_duration(self) -> int:
+    def fan_duration(self) -> int | None:
         if not hasattr(self, "status"):
             return None
         return self.status.get("fan_duration") if self.fan == FAN_ON else None
@@ -129,9 +123,7 @@ class Thermostat(Switch):
                 "mode": self.mode,
                 "heating_setpoint": self.heating_setpoint,
                 "cooling_setpoint": self.cooling_setpoint,
-                "fan": self.fan
+                "fan": self.fan,
             },
-            "settings": {
-                "fan_on_mode": self.fan_duration
-            }
+            "settings": {"fan_on_mode": self.fan_duration},
         }

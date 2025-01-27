@@ -76,9 +76,7 @@ class RentlyCloud:
     def token(self, value: str) -> None:
         """Set token"""
         try:
-            self._token = jwt.decode(
-                value, options={"verify_signature": False}
-            )
+            self._token = jwt.decode(value, options={"verify_signature": False})
             self._auth["access_token"] = value
         except jwt.ExpiredSignatureError:
             self.logout()
@@ -214,9 +212,11 @@ class RentlyCloud:
             bool: Connection status
         """
         if not self._auth:
-            return MissingParametersError("No token to refresh")
+            raise MissingParametersError("No token to refresh")
 
-        res = self.call(self._api.get_oauth_refresh_request(self._auth["refresh_token"]))
+        res = self.call(
+            self._api.get_oauth_refresh_request(self._auth["refresh_token"])
+        )
 
         if not res.get("success") or "access_token" not in res:
             raise RentlyAuthError(res.get("message", "Refresh failed"))
@@ -228,6 +228,7 @@ class RentlyCloud:
 
         # Update session headers
         self._session.headers.update(self.headers)
+        return True
 
     def logout(self) -> None:
         """
@@ -362,9 +363,7 @@ class RentlyCloud:
         if not self.connected:
             raise RentlyAuthError("Unauthenticated")
 
-        _LOGGER.debug(
-            "Sending payload %s to %s", json.dumps(command), device_id
-        )
+        _LOGGER.debug("Sending payload %s to %s", json.dumps(command), device_id)
 
         self.call(self._api.update_device_request(device_id, command))
 

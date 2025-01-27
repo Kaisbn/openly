@@ -12,11 +12,7 @@ from openly.const import (
     HEADER_VALUE_CONTENT_TYPE,
     HEADER_VALUE_USER_AGENT,
 )
-from openly.exceptions import (
-    MissingParametersError,
-    RentlyAPIError,
-    RentlyAuthError,
-)
+from openly.exceptions import MissingParametersError, RentlyAPIError, RentlyAuthError
 
 
 @pytest.fixture(scope="function")

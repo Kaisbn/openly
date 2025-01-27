@@ -10,7 +10,6 @@ class APIRouteGenerator:
     """
 
     _BASE_URL: str = const.API_DEFAULT_BASE_URL
-    _BASE_LOGIN_URL: str = const.API_DEFAULT_BASE_URL
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None
@@ -28,8 +27,6 @@ class APIRouteGenerator:
         if url:
             self._BASE_URL = url
 
-        self._BASE_LOGIN_URL = login_url or self._BASE_URL
-
     def __getattr__(self, attr: str) -> str:
         """
         Override __getattr__ magic method to return generated URL paths
@@ -40,9 +37,6 @@ class APIRouteGenerator:
         Returns:
             str: URL Path
         """
-        if attr.lower() == "login":
-            return self._BASE_LOGIN_URL + "oauth/token"
-
         return self._BASE_URL + attr.lower().replace("_", "/")
 
 
@@ -52,6 +46,7 @@ class APIRequestGenerator:
     """
 
     api_routes: APIRouteGenerator
+    login_api_routes: APIRouteGenerator
 
     def __init__(
         self, url: Optional[str] = None, login_url: Optional[str] = None
@@ -66,11 +61,10 @@ class APIRequestGenerator:
                 useful when login is separated from the main API.
                 Defaults to the Base URL above.
         """
-        self.api_routes = APIRouteGenerator(url, login_url)
+        self.api_routes = APIRouteGenerator(url)
+        self.login_api_routes = APIRouteGenerator(login_url)
 
-    def get_oauth_token_request(
-        self, email: str, password: str
-    ) -> dict[str, Any]:
+    def get_oauth_token_request(self, email: str, password: str) -> dict[str, Any]:
         """
         Retrieve authentication token using credentials
 
@@ -83,8 +77,24 @@ class APIRequestGenerator:
         """
         return {
             "method": "POST",
-            "url": self.api_routes.LOGIN,
+            "url": self.login_api_routes.OAUTH_TOKEN,
             "body": json.dumps({"email": email, "password": password}),
+        }
+
+    def get_oauth_refresh_request(self, refresh_token: str) -> dict[str, Any]:
+        """
+        Retrieve a new authentication token using a refresh token
+
+        Args:
+            refresh_token (str)
+
+        Returns:
+            dict[str, Any]: Request parameters
+        """
+        return {
+            "method": "POST",
+            "url": self.login_api_routes.API_REFRESHTOKEN,
+            "body": json.dumps({"refreshtoken": refresh_token}),
         }
 
     def get_hub_list_request(self) -> dict[str, Any]:
@@ -99,9 +109,7 @@ class APIRequestGenerator:
             "url": self.api_routes.hubs,
         }
 
-    def get_hub_detail_request(
-        self, hub_id: Union[str, int]
-    ) -> dict[str, Any]:
+    def get_hub_detail_request(self, hub_id: Union[str, int]) -> dict[str, Any]:
         """
         Retrieve single hub information
 
@@ -116,9 +124,7 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}"),
         }
 
-    def get_device_list_request(
-        self, hub_id: Union[str, int]
-    ) -> dict[str, Any]:
+    def get_device_list_request(self, hub_id: Union[str, int]) -> dict[str, Any]:
         """
         Retrieve list of devices for a single hub
 
@@ -133,9 +139,7 @@ class APIRequestGenerator:
             "url": getattr(self.api_routes, f"hubs_{hub_id}_devices"),
         }
 
-    def get_device_detail_request(
-        self, device_id: Union[str, int]
-    ) -> dict[str, Any]:
+    def get_device_detail_request(self, device_id: Union[str, int]) -> dict[str, Any]:
         """
         Retrieve list of devices for a single hub
 
