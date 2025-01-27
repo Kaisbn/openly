@@ -48,7 +48,7 @@ jobs:
         run: make format-check
       - name: Type checking
         run: make type-check
-  safety:
+  security:
     strategy:
       fail-fast: false
       matrix:
