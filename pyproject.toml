@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openly-core"
-version = "0.1.1"
+version = "0.0.0"
 description = "Python API wrapper for Rently Smart Home hubs and devices"
 authors = ["Kais Bennaceur <bennaceur.kais@me.com>"]
 license = "GPL-3.0-or-later"
@@ -26,9 +26,15 @@ types-requests = "^2.32.0.20241016"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.ruff]
 line-length = 88
