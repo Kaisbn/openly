@@ -18,9 +18,9 @@ class Thermostat(Switch):
         super().__init__(device_id, device_data)
 
         if hasattr(self, "status"):
-            self.heating_setpoint = self.status.get("heating_setpoint", None)
-            self.cooling_setpoint = self.status.get("cooling_setpoint", None)
-            self.room_temp = self.status.get("room_temp", None)
+            self.heating_setpoint = self.status.get("heating_setpoint")
+            self.cooling_setpoint = self.status.get("cooling_setpoint")
+            self.room_temp = self.status.get("room_temp")
         if hasattr(self, "settings"):
             self.fan_duration = self.settings.get("fan_on_time", 0)
 
@@ -40,7 +40,7 @@ class Thermostat(Switch):
         return self.status.get("heating_setpoint")
 
     @heating_setpoint.setter
-    def heating_setpoint(self, temp: int) -> None:
+    def heating_setpoint(self, temp: int | None) -> None:
         if not temp or not isinstance(temp, int):
             raise InvalidParametersError("Invalid temperature")
         if temp < 50 or temp > 90:
@@ -58,7 +58,7 @@ class Thermostat(Switch):
         return self.status.get("cooling_setpoint")
 
     @cooling_setpoint.setter
-    def cooling_setpoint(self, temp: int) -> None:
+    def cooling_setpoint(self, temp: int | None) -> None:
         if not temp or not isinstance(temp, int):
             raise InvalidParametersError("Invalid temperature")
         if temp < 50 or temp > 90:
@@ -77,7 +77,7 @@ class Thermostat(Switch):
         return self.status.get("room_temp")
 
     @room_temp.setter
-    def room_temp(self, temp: int) -> None:
+    def room_temp(self, temp: int | None) -> None:
         if not temp or not isinstance(temp, int):
             raise InvalidParametersError("Invalid temperature")
         self.status["room_temp"] = int(temp)
