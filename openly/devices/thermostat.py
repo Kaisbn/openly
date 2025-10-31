@@ -12,6 +12,7 @@ HVAC_MODE_AUTO = "auto"
 
 class Thermostat(Switch):
     modes = [HVAC_MODE_AUTO, HVAC_MODE_COOL, HVAC_MODE_HEAT, HVAC_MODE_OFF]
+    fan_modes = [FAN_AUTO, FAN_ON]
 
     def __init__(self, device_id: str | int, device_data: dict = {}) -> None:
         super().__init__(device_id, device_data)
