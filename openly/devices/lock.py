@@ -13,7 +13,7 @@ class Lock(Switch):
 
     @property
     def cmd(self) -> dict:
-        return {"mode": "unlock" if self.mode == "unlocked" else "lock"}
+        return {"commands": {"mode": "unlock" if self.mode == "unlocked" else "lock"}}
 
     @property
     def battery(self) -> int:

@@ -381,10 +381,4 @@ class RentlyCloud:
         if not device or not isinstance(device, BaseDevice):
             raise MissingParametersError("Device not found")
 
-        _LOGGER.debug(
-            "Sending payload %s to %s",
-            json.dumps(device.cmd),
-            device.id,
-        )
-
         self.send_command(device.id, device.cmd)

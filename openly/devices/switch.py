@@ -34,4 +34,4 @@ class Switch(BaseDevice):
 
     @property
     def cmd(self) -> dict:
-        return {"mode": self.mode}
+        return {"commands": {"mode": self.mode}}

@@ -170,5 +170,5 @@ class APIRequestGenerator:
         return {
             "method": "PUT",
             "url": getattr(self.api_routes, f"devices_{device_id}"),
-            "body": json.dumps({"commands": commands}),
+            "body": json.dumps(commands),
         }
