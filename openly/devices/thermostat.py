@@ -34,6 +34,12 @@ class Thermostat(Switch):
         self.mode = HVAC_MODE_COOL
 
     @property
+    def operating_state(self) -> str | None:
+        if not hasattr(self, "status"):
+            return None
+        return self.status.get("operating_state")
+
+    @property
     def heating_setpoint(self) -> int | None:
         if not hasattr(self, "status"):
             return None
