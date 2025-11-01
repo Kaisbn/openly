@@ -42,8 +42,10 @@ def test_dimmer_cmd_off(switch_data):
     dimmer.off()
 
     assert dimmer.cmd == {
-        "mode": "off",
-        "power": switch_data["status"]["power"],
+        "commands": {
+            "mode": "off",
+            "power": switch_data["status"]["power"],
+        }
     }
 
 
@@ -53,8 +55,10 @@ def test_dimmer_cmd_on(switch_data):
     dimmer.on()
 
     assert dimmer.cmd == {
-        "mode": "on",
-        "power": switch_data["status"]["power"],
+        "commands": {
+            "mode": "on",
+            "power": switch_data["status"]["power"],
+        }
     }
 
 
@@ -77,7 +81,7 @@ def test_dimmer_power_up(switch_data):
     cur_pow = dimmer.power
     dimmer.up(50)
 
-    assert dimmer.cmd == {"mode": "on", "power": min(cur_pow + 50, 100)}
+    assert dimmer.cmd == {"commands": {"mode": "on", "power": min(cur_pow + 50, 100)}}
 
 
 def test_dimmer_power_down(switch_data):
@@ -85,7 +89,7 @@ def test_dimmer_power_down(switch_data):
     cur_pow = dimmer.power
     dimmer.down(50)
 
-    assert dimmer.cmd == {"mode": "off", "power": max(cur_pow - 50, 0)}
+    assert dimmer.cmd == {"commands": {"mode": "off", "power": max(cur_pow - 50, 0)}}
 
 
 def test_dimmer_status_none(switch_data):

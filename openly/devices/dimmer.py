@@ -35,4 +35,4 @@ class Dimmer(Switch):
 
     @property
     def cmd(self):
-        return super().cmd | {"power": self.power}
+        return {"commands": {"power": self.power, "mode": self.mode}}

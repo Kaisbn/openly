@@ -37,7 +37,7 @@ def test_lock_name_none(lock_data):
 def test_lock_cmd(lock_data):
     lock = Lock(device_id=lock_data["id"], device_data=lock_data)
 
-    assert lock.cmd == {"mode": "lock"}
+    assert lock.cmd == {"commands": {"mode": "lock"}}
 
 
 def test_lock_lock(lock_data):
@@ -45,7 +45,7 @@ def test_lock_lock(lock_data):
 
     lock.lock()
 
-    assert lock.cmd == {"mode": "lock"}
+    assert lock.cmd == {"commands": {"mode": "lock"}}
     assert lock.mode == "locked"
 
 
@@ -54,7 +54,7 @@ def test_lock_unlock(lock_data):
 
     lock.unlock()
 
-    assert lock.cmd == {"mode": "unlock"}
+    assert lock.cmd == {"commands": {"mode": "unlock"}}
     assert lock.mode == "unlocked"
 
 

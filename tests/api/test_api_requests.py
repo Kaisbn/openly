@@ -59,7 +59,7 @@ def test_device_detail_request():
 
 def test_device_update_request():
     generator = APIRequestGenerator()
-    request = generator.update_device_request(device_id=1, commands={"mode": "off"})
+    request = generator.update_device_request(device_id=1, commands={"commands": {"mode": "off"}})
 
     assert request["method"] == "PUT"
     assert request["url"] == API_DEFAULT_BASE_URL + "devices/1"
